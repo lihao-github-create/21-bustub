@@ -78,8 +78,6 @@ class Exception : public std::runtime_error {
   /** @return A human-readable string for the specified exception type */
   static std::string ExceptionTypeToString(ExceptionType type) {
     switch (type) {
-      case ExceptionType::INVALID:
-        return "Invalid";
       case ExceptionType::OUT_OF_RANGE:
         return "Out of Range";
       case ExceptionType::CONVERSION:
