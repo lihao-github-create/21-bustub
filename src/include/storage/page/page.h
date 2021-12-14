@@ -77,7 +77,6 @@ class Page {
  private:
   /** Zeroes out the data that is held within the page. */
   inline void ResetMemory() { memset(data_, OFFSET_PAGE_START, PAGE_SIZE); }
-
   /** The actual data that is stored within a page. */
   char data_[PAGE_SIZE]{};
   /** The ID of this page. */

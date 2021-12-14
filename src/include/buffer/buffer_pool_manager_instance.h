@@ -14,6 +14,7 @@
 
 #include <list>
 #include <mutex>  // NOLINT
+#include <set>
 #include <unordered_map>
 
 #include "buffer/buffer_pool_manager.h"
@@ -112,6 +113,7 @@ class BufferPoolManagerInstance : public BufferPoolManager {
    */
   void DeallocatePage(__attribute__((unused)) page_id_t page_id) {
     // This is a no-nop right now without a more complex data structure to track deallocated pages
+    // recycle_list_.insert(page_id);
   }
 
   /**
@@ -121,6 +123,12 @@ class BufferPoolManagerInstance : public BufferPoolManager {
    */
   void ValidatePageId(page_id_t page_id) const;
 
+  inline void Reset(Page *page) {
+    page->ResetMemory();
+    page->page_id_ = INVALID_PAGE_ID;
+    page->pin_count_ = 0;
+    page->is_dirty_ = false;
+  }
   /** Number of pages in the buffer pool. */
   const size_t pool_size_;
   /** How many instances are in the parallel BPM (if present, otherwise just 1 BPI) */
@@ -142,6 +150,7 @@ class BufferPoolManagerInstance : public BufferPoolManager {
   Replacer *replacer_;
   /** List of free pages. */
   std::list<frame_id_t> free_list_;
+  // std::set<page_id_t> recycle_list_;
   /** This latch protects shared data structures. We recommend updating this comment to describe what it protects. */
   std::mutex latch_;
 };
