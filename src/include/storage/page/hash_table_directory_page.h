@@ -31,6 +31,7 @@ namespace bustub {
  * | LSN (4) | PageId(4) | GlobalDepth(4) | LocalDepths(512) | BucketPageIds(2048) | Free(1524)
  * --------------------------------------------------------------------------------------------
  */
+// 实际上对应于PPT上的global + bucket pointers array, 就是它们的一种封装
 class HashTableDirectoryPage {
  public:
   /**

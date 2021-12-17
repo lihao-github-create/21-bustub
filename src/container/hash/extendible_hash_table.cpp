@@ -26,7 +26,19 @@ template <typename KeyType, typename ValueType, typename KeyComparator>
 HASH_TABLE_TYPE::ExtendibleHashTable(const std::string &name, BufferPoolManager *buffer_pool_manager,
                                      const KeyComparator &comparator, HashFunction<KeyType> hash_fn)
     : buffer_pool_manager_(buffer_pool_manager), comparator_(comparator), hash_fn_(std::move(hash_fn)) {
-  //  implement me!
+  //  申请一个page用作directory page
+  Page *directory_page = nullptr;
+  Page *bucket_page = nullptr;
+  page_id_t bucket_page_id = -1;
+  if ((directory_page = buffer_pool_manager_->NewPage(&directory_page_id_)) == nullptr) {
+    LOG_ERROR("New direcotry page Failed");
+  } else if ((bucket_page = buffer_pool_manager->NewPage(&bucket_page_id)) == nullptr) {
+    LOG_ERROR("New bucket_page_id Failed");
+  } else {
+    HashTableDirectoryPage *dir_page = reinterpret_cast<HashTableDirectoryPage *>(directory_page->GetData());
+    dir_page->SetPageId(directory_page->GetPageId());
+    dir_page->SetBucketPageId(0, bucket_page_id);
+  }
 }
 
 /*****************************************************************************
@@ -46,6 +58,16 @@ uint32_t HASH_TABLE_TYPE::Hash(KeyType key) {
 
 template <typename KeyType, typename ValueType, typename KeyComparator>
 inline uint32_t HASH_TABLE_TYPE::KeyToDirectoryIndex(KeyType key, HashTableDirectoryPage *dir_page) {
+  uint32_t ret = 0;
+  uint32_t hash_key = Hash(key);
+  Page *page = nullptr;
+  if ((page = buffer_pool_manager_->FetchPage(directory_page_id_)) == nullptr) {
+    LOG_ERROR("Fetch Directory Page Failed");
+  } else {
+    HashTableDirectoryPage *dir_page = reinterpret_cast<HashTableDirectoryPage *>(directory_page->GetData());
+    auto global_mask = dir_page->GetGlobalDepthMask();
+
+  }
   return 0;
 }
 

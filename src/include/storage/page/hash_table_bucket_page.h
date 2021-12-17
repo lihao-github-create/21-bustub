@@ -34,6 +34,7 @@ namespace bustub {
  *  readable_ arrays. More information is in storage/page/hash_table_page_defs.h.
  *
  */
+// 用于操纵Page content
 template <typename KeyType, typename ValueType, typename KeyComparator>
 class HashTableBucketPage {
  public:
