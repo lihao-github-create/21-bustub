@@ -74,11 +74,14 @@ class HashTableDirectoryPage {
    */
   void SetBucketPageId(uint32_t bucket_idx, page_id_t bucket_page_id);
 
+  // 将原来指向src_page_id的bucket_idxs，分一半指向new_page_id
+  void SplitBucketPageId(page_id_t src_page_id, page_id_t new_page_id);
+
   /**
    * Gets the split image of an index
    *
    * @param bucket_idx the directory index for which to find the split image
-   * @return the directory index of the split image
+   * @return the directory index of the split image(可以理解为由同一个桶指针分裂而来)
    **/
   uint32_t GetSplitImageIndex(uint32_t bucket_idx);
 
@@ -155,6 +158,12 @@ class HashTableDirectoryPage {
    * @param bucket_idx bucket index to increment
    */
   void IncrLocalDepth(uint32_t bucket_idx);
+
+  /**
+   * Increment the local depth of the bucket that is equal to page_id
+   * @param page_id
+   */
+  void IncrLocalDepthByPageId(page_id_t page_id);
 
   /**
    * Decrement the local depth of the bucket at bucket_idx
