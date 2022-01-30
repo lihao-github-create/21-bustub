@@ -166,10 +166,7 @@ bool BufferPoolManagerInstance::DeletePgImp(page_id_t page_id) {
     page = &pages_[ite->second];
     if (page->pin_count_ == 0) {
       DeallocatePage(page_id);
-      // if (page->is_dirty_) {
-      //   FlushPgImp(page_id);
-      // }
-      replacer_->Pin(page_id);  // 从替换列表中移除
+      replacer_->Pin(ite->second);  // 从替换列表中移除
       Reset(page);
       free_list_.push_back(ite->second);  // 加入空闲列表
       page_table_.erase(page_id);

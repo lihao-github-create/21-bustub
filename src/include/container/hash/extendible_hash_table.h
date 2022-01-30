@@ -43,7 +43,6 @@ class ExtendibleHashTable {
    */
   explicit ExtendibleHashTable(const std::string &name, BufferPoolManager *buffer_pool_manager,
                                const KeyComparator &comparator, HashFunction<KeyType> hash_fn);
-
   /**
    * Inserts a key-value pair into the hash table.
    *
@@ -93,7 +92,7 @@ class ExtendibleHashTable {
    * @return the downcasted 32-bit hash
    */
   inline uint32_t Hash(KeyType key);
-
+  inline uint32_t GetHighBitofHashkey(uint32_t depth, uint32_t hash_key);
   /**
    * KeyToDirectoryIndex - maps a key to a directory index
    *
@@ -160,7 +159,6 @@ class ExtendibleHashTable {
    * @param value the value that was removed
    */
   void Merge(Transaction *transaction, const KeyType &key, const ValueType &value);
-  void Coalesce(Transaction *transaction, uint32_t bucket_idx, HashTableDirectoryPage *dir_page);
 
   // member variables
   page_id_t directory_page_id_;

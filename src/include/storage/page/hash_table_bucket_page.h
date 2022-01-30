@@ -18,7 +18,10 @@
 #include "common/config.h"
 #include "storage/index/int_comparator.h"
 #include "storage/page/hash_table_page_defs.h"
-
+#define setbit(x, y) (x) |= (1 << (y))
+#define clrbit(x, y) (x) &= ~(1 << (y))
+#define reversebit(x, y) (x) ^= (1 << (y))
+#define getbit(x, y) ((x) >> (y)&1)
 namespace bustub {
 /**
  * Store indexed key and and value together within bucket page. Supports

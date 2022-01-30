@@ -10,6 +10,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include <iostream>
 #include <thread>  // NOLINT
 #include <vector>
 
@@ -19,6 +20,7 @@
 #include "storage/disk/disk_manager.h"
 #include "storage/page/hash_table_bucket_page.h"
 #include "storage/page/hash_table_directory_page.h"
+#include "storage/page/hash_table_page_defs.h"
 
 namespace bustub {
 
@@ -47,6 +49,23 @@ TEST(HashTablePageTest, DirectoryPageSampleTest) {
   for (int i = 0; i < 8; i++) {
     EXPECT_EQ(i, directory_page->GetBucketPageId(i));
   }
+  // directory_page->SetBucketPageId(0, 1);
+  // // 第一次分裂
+  // directory_page->IncrGlobalDepth();
+  // directory_page->SplitBucketPageId(1, 2);
+  // directory_page->IncrLocalDepthByPageId(1);
+  // directory_page->IncrLocalDepthByPageId(2);
+
+  // auto index = directory_page->GetSplitImageIndex(0);
+  // std::cout << index << std::endl;
+
+  // // 第二次分裂
+  // directory_page->IncrGlobalDepth();
+  // directory_page->SplitBucketPageId(1, 3);
+  // directory_page->IncrLocalDepthByPageId(1);
+  // directory_page->IncrLocalDepthByPageId(3);
+  // auto index = directory_page->GetSplitImageIndex(0);
+  // std::cout << index << std::endl;
 
   // unpin the directory page now that we are done
   bpm->UnpinPage(directory_page_id, true, nullptr);
@@ -69,6 +88,7 @@ TEST(HashTablePageTest, BucketPageSampleTest) {
 
   // insert a few (key, value) pairs
   for (unsigned i = 0; i < 10; i++) {
+    // std::cout << i << std::endl;
     assert(bucket_page->Insert(i, i, IntComparator()));
   }
 

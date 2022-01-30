@@ -19,7 +19,10 @@
 
 #include "storage/index/generic_key.h"
 #include "storage/page/hash_table_page_defs.h"
-
+#define setbit(x, y) (x) |= (1 << (y))
+#define clrbit(x, y) (x) &= ~(1 << (y))
+#define reversebit(x, y) (x) ^= (1 << (y))
+#define getbit(x, y) ((x) >> (y)&1)
 namespace bustub {
 
 /**
@@ -73,9 +76,6 @@ class HashTableDirectoryPage {
    * @param bucket_page_id page_id to insert
    */
   void SetBucketPageId(uint32_t bucket_idx, page_id_t bucket_page_id);
-
-  // 将原来指向src_page_id的bucket_idxs，分一半指向new_page_id
-  void SplitBucketPageId(page_id_t src_page_id, page_id_t new_page_id);
 
   /**
    * Gets the split image of an index
@@ -201,7 +201,7 @@ class HashTableDirectoryPage {
   lsn_t lsn_;
   uint32_t global_depth_{0};
   uint8_t local_depths_[DIRECTORY_ARRAY_SIZE];
-  page_id_t bucket_page_ids_[DIRECTORY_ARRAY_SIZE];
+  page_id_t bucket_page_ids_[DIRECTORY_ARRAY_SIZE];  // logical hash table
 };
 
 }  // namespace bustub

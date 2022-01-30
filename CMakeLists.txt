@@ -74,7 +74,7 @@ configure_file("${PROJECT_SOURCE_DIR}/build_support/gtest_CMakeLists.txt.in" goo
 execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
         WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download")
 execute_process(COMMAND "${CMAKE_COMMAND}" --build .
-        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download")
+       WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download")
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)  # don't override our compiler/linker options when building gtest
 add_subdirectory("${CMAKE_BINARY_DIR}/googletest-src" "${CMAKE_BINARY_DIR}/googletest-build")
 
