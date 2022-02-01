@@ -1,14 +1,14 @@
-// ===----------------------------------------------------------------------===//
+// // ===----------------------------------------------------------------------===//
 
-//                         BusTub
+// //                         BusTub
 
-// hash_table_test.cpp
+// // hash_table_test.cpp
 
-// Identification: test/container/hash_table_test.cpp
+// // Identification: test/container/hash_table_test.cpp
 
-// Copyright (c) 2015-2021, Carnegie Mellon University Database Group
+// // Copyright (c) 2015-2021, Carnegie Mellon University Database Group
 
-// ===----------------------------------------------------------------------===//
+// // ===----------------------------------------------------------------------===//
 
 // #include <thread>  // NOLINT
 // #include <vector>
@@ -151,7 +151,7 @@ TEST(HashTableTest, SampleTest) {
   ExtendibleHashTable<int, int, IntComparator> ht("blah", bpm, IntComparator(), HashFunction<int>());
 
   // insert a few values
-  for (int i = 0; i < 50000; i++) {
+  for (int i = 0; i < 10000; i++) {
     ht.Insert(nullptr, i, i);
     std::vector<int> res;
     ht.GetValue(nullptr, i, &res);
@@ -162,7 +162,7 @@ TEST(HashTableTest, SampleTest) {
   ht.VerifyIntegrity();
 
   // check if the inserted values are all there
-  for (int i = 0; i < 50000; i++) {
+  for (int i = 0; i < 10000; i++) {
     std::vector<int> res;
     ht.GetValue(nullptr, i, &res);
     EXPECT_EQ(1, res.size()) << "Failed to keep " << i << std::endl;
@@ -221,7 +221,7 @@ TEST(HashTableTest, SampleTest) {
   // ht.VerifyIntegrity();
 
   // delete all values
-  for (int i = 0; i < 50000; i++) {
+  for (int i = 0; i < 10000; i++) {
     // if (i == 0) {
     //   // (0, 0) has been deleted
     //   EXPECT_FALSE(ht.Remove(nullptr, i, 2 * i));
@@ -238,7 +238,7 @@ TEST(HashTableTest, SampleTest) {
 
   ht.VerifyIntegrity();
 
-  for (int i = 0; i < 50000; i++) {
+  for (int i = 0; i < 10000; i++) {
     std::vector<int> res;
     ht.GetValue(nullptr, i, &res);
     EXPECT_EQ(0, res.size()) << "Failed to keep " << i << std::endl;

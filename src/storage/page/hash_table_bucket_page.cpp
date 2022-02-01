@@ -59,6 +59,12 @@ bool HASH_TABLE_BUCKET_TYPE::Insert(KeyType key, ValueType value, KeyComparator 
 }
 
 template <typename KeyType, typename ValueType, typename KeyComparator>
+void HASH_TABLE_BUCKET_TYPE::Insert(uint32_t bucket_idx, KeyType key, ValueType value) {
+  array_[bucket_idx] = MappingType(key, value);
+  SetOccupied(bucket_idx);
+  SetReadable(bucket_idx);
+}
+template <typename KeyType, typename ValueType, typename KeyComparator>
 bool HASH_TABLE_BUCKET_TYPE::Remove(KeyType key, ValueType value, KeyComparator cmp) {
   bool ret = false;
   for (size_t bucket_idx = 0; bucket_idx < BUCKET_ARRAY_SIZE; bucket_idx++) {

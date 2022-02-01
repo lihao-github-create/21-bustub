@@ -59,8 +59,9 @@ uint32_t HashTableDirectoryPage::Size() { return std::pow(2, global_depth_); }
 
 bool HashTableDirectoryPage::CanShrink() {
   bool ret = true;
-  for (auto local_depth : local_depths_) {
-    if (local_depth == global_depth_) {
+  auto size = Size();
+  for (uint32_t i = 0; i < size; i++) {
+    if (local_depths_[i] == global_depth_) {
       ret = false;
       break;
     }
@@ -75,14 +76,6 @@ void HashTableDirectoryPage::SetLocalDepth(uint32_t bucket_idx, uint8_t local_de
 }
 
 void HashTableDirectoryPage::IncrLocalDepth(uint32_t bucket_idx) { local_depths_[bucket_idx]++; }
-
-void HashTableDirectoryPage::IncrLocalDepthByPageId(page_id_t page_id) {
-  for (uint32_t bucket_idx = 0; bucket_idx < DIRECTORY_ARRAY_SIZE; bucket_idx++) {
-    if (bucket_page_ids_[bucket_idx] == page_id) {
-      local_depths_[bucket_idx]++;
-    }
-  }
-}
 
 void HashTableDirectoryPage::DecrLocalDepth(uint32_t bucket_idx) { local_depths_[bucket_idx]--; }
 

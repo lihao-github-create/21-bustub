@@ -160,12 +160,6 @@ class HashTableDirectoryPage {
   void IncrLocalDepth(uint32_t bucket_idx);
 
   /**
-   * Increment the local depth of the bucket that is equal to page_id
-   * @param page_id
-   */
-  void IncrLocalDepthByPageId(page_id_t page_id);
-
-  /**
    * Decrement the local depth of the bucket at bucket_idx
    * @param bucket_idx bucket index to decrement
    */

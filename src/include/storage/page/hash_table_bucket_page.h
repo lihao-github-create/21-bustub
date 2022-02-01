@@ -61,6 +61,7 @@ class HashTableBucketPage {
    */
   bool Insert(KeyType key, ValueType value, KeyComparator cmp);
 
+  void Insert(uint32_t bucket_idx, KeyType key, ValueType value);
   /**
    * Removes a key and value.
    *
