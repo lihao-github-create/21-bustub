@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "execution/expressions/abstract_expression.h"
 #include "execution/plans/abstract_plan.h"
 
 namespace bustub {
@@ -34,8 +35,8 @@ class HashJoinPlanNode : public AbstractPlanNode {
   HashJoinPlanNode(const Schema *output_schema, std::vector<const AbstractPlanNode *> &&children,
                    const AbstractExpression *left_key_expression, const AbstractExpression *right_key_expression)
       : AbstractPlanNode(output_schema, std::move(children)),
-        left_key_expression_{left_key_expression},
-        right_key_expression_{right_key_expression} {}
+        left_key_expression_(left_key_expression),
+        right_key_expression_(right_key_expression) {}
 
   /** @return The type of the plan node */
   PlanType GetType() const override { return PlanType::HashJoin; }

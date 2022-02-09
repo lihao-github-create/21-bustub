@@ -150,6 +150,7 @@ class TablePage : public Page {
   static constexpr size_t OFFSET_TUPLE_SIZE = 28;
 
   /** @return pointer to the end of the current free space, see header comment */
+  // note: 实际为offset,距page起始处的offset
   uint32_t GetFreeSpacePointer() { return *reinterpret_cast<uint32_t *>(GetData() + OFFSET_FREE_SPACE); }
 
   /** Sets the pointer, this should be the end of the current free space. */

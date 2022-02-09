@@ -13,11 +13,42 @@
 #pragma once
 
 #include <memory>
+#include <unordered_set>
 #include <utility>
+#include <vector>
 
+#include "common/util/hash_util.h"
 #include "execution/executors/abstract_executor.h"
+#include "execution/expressions/abstract_expression.h"
 #include "execution/plans/distinct_plan.h"
 
+namespace bustub {
+struct DistinctKey {
+  std::vector<Value> distinct_values_;
+  bool operator==(const DistinctKey &other) const {
+    for (size_t i = 0; i < distinct_values_.size(); i++) {
+      if (distinct_values_[i].CompareEquals(other.distinct_values_[i]) != CmpBool::CmpTrue) {
+        return false;
+      }
+    }
+    return true;
+  }
+};
+}  // namespace bustub
+namespace std {
+template <>
+struct hash<bustub::DistinctKey> {
+  std::size_t operator()(const bustub::DistinctKey &distinct_key) const {
+    size_t curr_hash = 0;
+    for (auto &value : distinct_key.distinct_values_) {
+      if (!value.IsNull()) {
+        curr_hash = bustub::HashUtil::CombineHashes(curr_hash, bustub::HashUtil::HashValue(&value));
+      }
+    }
+    return curr_hash;
+  }
+};
+}  // namespace std
 namespace bustub {
 
 /**
@@ -53,5 +84,6 @@ class DistinctExecutor : public AbstractExecutor {
   const DistinctPlanNode *plan_;
   /** The child executor from which tuples are obtained */
   std::unique_ptr<AbstractExecutor> child_executor_;
+  std::unordered_set<DistinctKey> ht_{};
 };
 }  // namespace bustub

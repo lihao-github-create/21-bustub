@@ -60,12 +60,15 @@ class ExecutionEngine {
       Tuple tuple;
       RID rid;
       while (executor->Next(&tuple, &rid)) {
-        if (result_set != nullptr) {
+        if (result_set != nullptr && plan->GetType() != PlanType::Update && plan->GetType() != PlanType::Insert &&
+            plan->GetType() != PlanType::Delete) {
           result_set->push_back(tuple);
         }
       }
     } catch (Exception &e) {
       // TODO(student): handle exceptions
+      exec_ctx->GetTransactionManager()->Abort(exec_ctx->GetTransaction());
+      return false;
     }
 
     return true;

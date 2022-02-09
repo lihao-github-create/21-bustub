@@ -120,7 +120,7 @@ class SimpleAggregationHashTable {
     /** @return The value of the iterator */
     const AggregateValue &Val() { return iter_->second; }
 
-    /** @return The iterator before it is incremented */
+    /** @return The iterator after it is incremented */
     Iterator &operator++() {
       ++iter_;
       return *this;
@@ -209,8 +209,8 @@ class AggregationExecutor : public AbstractExecutor {
   /** The child executor that produces tuples over which the aggregation is computed */
   std::unique_ptr<AbstractExecutor> child_;
   /** Simple aggregation hash table */
-  // TODO(Student): Uncomment SimpleAggregationHashTable aht_;
+  SimpleAggregationHashTable aht_;
   /** Simple aggregation hash table iterator */
-  // TODO(Student): Uncomment SimpleAggregationHashTable::Iterator aht_iterator_;
+  SimpleAggregationHashTable::Iterator aht_iterator_;
 };
 }  // namespace bustub
