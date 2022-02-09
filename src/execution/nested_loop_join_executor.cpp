@@ -43,7 +43,7 @@ bool NestedLoopJoinExecutor::Next(Tuple *tuple, RID *rid) {
       RID temp_rid;
       if (!left_executor_->Next(&left_tuple_, &temp_rid)) {
         return false;
-      } 
+      }
       right_executor_->Init();
     } else {
       if (plan_->Predicate() == nullptr || plan_->Predicate()

@@ -23,15 +23,7 @@ void LimitExecutor::Init() { child_executor_->Init(); }
 bool LimitExecutor::Next(Tuple *tuple, RID *rid) {
   if (emit_tuple_number_ < plan_->GetLimit()) {
     ++emit_tuple_number_;
-    Tuple temp_tuple;
-    if (child_executor_->Next(&temp_tuple, rid)) {
-      std::vector<Value> values;
-      auto &out_columns = GetOutputSchema()->GetColumns();
-      values.reserve(out_columns.size());
-      for (auto &col : out_columns) {
-        values.push_back(col.GetExpr()->Evaluate(&temp_tuple, child_executor_->GetOutputSchema()));
-      }
-      *tuple = temp_tuple;
+    if (child_executor_->Next(tuple, rid)) {
       return true;
     }
   }

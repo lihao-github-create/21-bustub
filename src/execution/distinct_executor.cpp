@@ -21,19 +21,15 @@ DistinctExecutor::DistinctExecutor(ExecutorContext *exec_ctx, const DistinctPlan
 void DistinctExecutor::Init() { child_executor_->Init(); }
 
 bool DistinctExecutor::Next(Tuple *tuple, RID *rid) {
-  Tuple temp_tuple;
-  while (child_executor_->Next(&temp_tuple, rid)) {
+  while (child_executor_->Next(tuple, rid)) {
     std::vector<Value> values;
-    auto &out_columns = GetOutputSchema()->GetColumns();
-    values.reserve(out_columns.size());
-    for (auto &col : out_columns) {
-      values.push_back(col.GetExpr()->Evaluate(&temp_tuple, child_executor_->GetOutputSchema()));
+    for (size_t i = 0; i < child_executor_->GetOutputSchema()->GetColumnCount(); i++) {
+      values.push_back(tuple->GetValue(child_executor_->GetOutputSchema(), i));
     }
     DistinctKey key;
     key.distinct_values_ = values;
     if (ht_.find(key) == ht_.end()) {
       ht_.insert(key);
-      *tuple = Tuple(values, GetOutputSchema());
       return true;
     }
   }
