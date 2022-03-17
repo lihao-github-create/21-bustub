@@ -25,6 +25,9 @@ void SeqScanExecutor::Init() { table_iterator_ = table_info_->table_->Begin(exec
 bool SeqScanExecutor::Next(Tuple *tuple, RID *rid) {
   bool ret = false;
   while (table_iterator_ != table_info_->table_->End()) {
+    if (exec_ctx_->GetTransaction()->GetState() == TransactionState::ABORTED) {
+      throw TransactionAbortException(exec_ctx_->GetTransaction()->GetTransactionId(), AbortReason::LOCK_ON_SHRINKING);
+    }
     if (plan_->GetPredicate() == nullptr ||
         plan_->GetPredicate()->Evaluate(&(*table_iterator_), &(table_info_->schema_)).GetAs<bool>()) {
       ret = true;
@@ -37,6 +40,9 @@ bool SeqScanExecutor::Next(Tuple *tuple, RID *rid) {
       Tuple temp_tuple(values, plan_->OutputSchema());
       *tuple = temp_tuple;
       *rid = table_iterator_->GetRid();
+    }
+    if (exec_ctx_->GetTransaction()->GetIsolationLevel() == IsolationLevel::READ_COMMITTED) {
+      exec_ctx_->GetLockManager()->Unlock(exec_ctx_->GetTransaction(), table_iterator_->GetRid());
     }
     ++table_iterator_;
     if (ret) {

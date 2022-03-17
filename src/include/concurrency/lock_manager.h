@@ -30,6 +30,7 @@ class TransactionManager;
 
 /**
  * LockManager handles transactions asking for locks on records.
+ * NOTE: 加锁采取公平算法
  */
 class LockManager {
   enum class LockMode { SHARED, EXCLUSIVE };
@@ -129,6 +130,19 @@ class LockManager {
   /** Runs cycle detection in the background. */
   void RunCycleDetection();
 
+  bool IsCompatible(LockMode mode1, LockMode mode2) {
+    static bool compatible_matrix[2][2] = {
+        // s, x
+        true, false,  // s
+        false, false  // x
+    };
+    return compatible_matrix[int(mode1)][int(mode2)];
+  }
+
+  bool Dfs(txn_id_t txn_id, std::unordered_map<txn_id_t, bool> &visited, txn_id_t *new_txn_id);
+
+  bool CanWound(const LockRequestQueue &lock_request_queue, txn_id_t txn_id);
+  void Wound(txn_id_t txn_id, const RID &rid, LockRequestQueue &lock_request_queue);
  private:
   std::mutex latch_;
   std::atomic<bool> enable_cycle_detection_;
