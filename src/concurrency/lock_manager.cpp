@@ -18,128 +18,148 @@
 
 namespace bustub {
 
-bool LockManager::CanWound(const LockRequestQueue &lock_request_queue, txn_id_t txn_id) {
-  for (auto &request : lock_request_queue.request_queue_) {
-    if (request.granted_) {
-      if (request.txn_id_ < txn_id) {
-        return false;
-      }
-    } else {
-      break;
-    }
-  }
-  return true;
-}
-
-void LockManager::Wound(txn_id_t txn_id, const RID &rid, LockRequestQueue &lock_request_queue) {
-  for (auto iter = lock_request_queue.request_queue_.begin(); iter != lock_request_queue.request_queue_.end(); ++iter) {
-    if (iter->granted_) {
-      TransactionManager::GetTransaction(iter->txn_id_)->GetSharedLockSet()->erase(rid);
-      TransactionManager::GetTransaction(iter->txn_id_)->GetExclusiveLockSet()->erase(rid);
-      if (iter->txn_id_ != txn_id) {
-        TransactionManager::GetTransaction(iter->txn_id_)->SetState(TransactionState::ABORTED);
-      }
-      lock_request_queue.request_queue_.erase(iter++);
-    } else {
-      break;
-    }
-  }
-}
-
 bool LockManager::LockShared(Transaction *txn, const RID &rid) {
   std::unique_lock<std::mutex> lock(latch_);
-  if (txn->GetIsolationLevel() == IsolationLevel::READ_UNCOMMITTED) {
+  if (txn->GetIsolationLevel() == IsolationLevel::READ_UNCOMMITTED) {  // read_uncommited下无读锁
     return true;
   }
-  if (txn->GetState() != TransactionState::GROWING) {
+  if (txn->GetState() == TransactionState::ABORTED) {
+    return false;
+  }
+  if (txn->GetState() == TransactionState::SHRINKING) {
     txn->SetState(TransactionState::ABORTED);
     return false;
   }
 
   auto &lock_request_queue = lock_table_[rid];
   LockRequest request(txn->GetTransactionId(), LockMode::SHARED);
-  if (lock_request_queue.request_queue_.empty()) {  // no lock
-    lock_request_queue.request_queue_.push_back(request);
-    lock_request_queue.request_queue_.back().granted_ = true;
-  } else {  // locked
-    auto &pre_request = lock_request_queue.request_queue_.back();
-    if (pre_request.granted_ && IsCompatible(pre_request.lock_mode_, request.lock_mode_)) {  // compatible
-      request.granted_ = true;
-      lock_request_queue.request_queue_.push_back(request);
-    } else if (CanWound(lock_request_queue, txn->GetTransactionId())) {  // wound
-      Wound(txn->GetTransactionId(), rid, lock_request_queue);
-      request.granted_ = true;
-      lock_request_queue.request_queue_.push_front(request);
-    } else {  // wait
-      lock_request_queue.request_queue_.push_back(request);
-      auto request_ite = lock_request_queue.request_queue_.rbegin();  // 记录当前请求的索引
-      lock_request_queue.cv_.wait(
-          lock, [request_ite, txn]() { return txn->GetState() == TransactionState::ABORTED || request_ite->granted_; });
+  lock_request_queue.request_queue_.push_back(request);
+  while (txn->GetState() != TransactionState::ABORTED) {
+    auto iter = lock_request_queue.request_queue_.begin();
+    bool need_wait = false;
+    while (iter != lock_request_queue.request_queue_.end()) {
+      if (iter->txn_id_ < txn->GetTransactionId() && iter->lock_mode_ == LockMode::EXCLUSIVE) {
+        // 当前事务为新事物，则需要等待
+        need_wait = true;
+        break;
+      } else if (iter->txn_id_ > txn->GetTransactionId() && iter->lock_mode_ == LockMode::EXCLUSIVE) {
+        // 当前事务为老事务，则abort新事务
+        auto trans = TransactionManager::GetTransaction(iter->txn_id_);
+        trans->SetState(TransactionState::ABORTED);
+        if (iter->granted_) {
+          trans->GetSharedLockSet()->erase(rid);
+        }
+        iter = lock_request_queue.request_queue_.erase(iter);
+      } else {
+        ++iter;
+      }
     }
+    if (!need_wait) {  // 表示已获得该tuple锁
+      // 设置txn以及request.granted
+      lock_request_queue.SetGranted(txn->GetTransactionId(), LockMode::SHARED);
+      txn->GetSharedLockSet()->emplace(rid);
+      return true;
+    }
+    lock_request_queue.cv_.wait(lock);
   }
-  if (txn->GetState() == TransactionState::ABORTED) {
-    return false;
-  }
-  txn->GetSharedLockSet()->emplace(rid);
-  return true;
+  return false;
 }
 
 bool LockManager::LockExclusive(Transaction *txn, const RID &rid) {
   std::unique_lock<std::mutex> lock(latch_);
-  if (txn->GetState() != TransactionState::GROWING) {
-    txn->SetState(TransactionState::ABORTED);
-    return false;
-  }
-  auto &lock_request_queue = lock_table_[rid];
-  LockRequest request(txn->GetTransactionId(), LockMode::SHARED);
-  if (lock_request_queue.request_queue_.empty()) {  // no lock
-    request.granted_ = true;
-    lock_request_queue.request_queue_.push_back(request);
-  } else {                                                        // lock
-    if (CanWound(lock_request_queue, txn->GetTransactionId())) {  // wound
-      Wound(txn->GetTransactionId(), rid, lock_request_queue);
-      request.granted_ = true;
-      lock_request_queue.request_queue_.push_front(request);
-    } else {  // wait
-      lock_request_queue.request_queue_.push_back(request);
-      auto request_ite = lock_request_queue.request_queue_.rbegin();  // 记录当前请求的索引
-      lock_request_queue.cv_.wait(
-          lock, [request_ite, txn]() { return request_ite->granted_ || txn->GetState() == TransactionState::ABORTED; });
-    }
-  }
   if (txn->GetState() == TransactionState::ABORTED) {
     return false;
   }
-  txn->GetExclusiveLockSet()->emplace(rid);
-  return true;
+  if (txn->GetState() == TransactionState::SHRINKING) {
+    txn->SetState(TransactionState::ABORTED);
+    return false;
+  }
+
+  auto &lock_request_queue = lock_table_[rid];
+  LockRequest request(txn->GetTransactionId(), LockMode::EXCLUSIVE);
+  lock_request_queue.request_queue_.push_back(request);
+  while (txn->GetState() != TransactionState::ABORTED) {
+    auto iter = lock_request_queue.request_queue_.begin();
+    bool need_wait = false;
+    while (iter != lock_request_queue.request_queue_.end()) {
+      if (iter->txn_id_ < txn->GetTransactionId()) {
+        // 当前事务为新事物，则需要等待
+        need_wait = true;
+        break;
+      } else if (iter->txn_id_ > txn->GetTransactionId()) {
+        // 当前事务为老事务，则abort新事务
+        auto trans = TransactionManager::GetTransaction(iter->txn_id_);
+        trans->SetState(TransactionState::ABORTED);
+        if (iter->granted_ && iter->lock_mode_ == LockMode::SHARED) {
+          trans->GetSharedLockSet()->erase(rid);
+        } else if (iter->granted_ && iter->lock_mode_ == LockMode::EXCLUSIVE) {
+          trans->GetExclusiveLockSet()->erase(rid);
+        }
+        iter = lock_request_queue.request_queue_.erase(iter);
+      } else {
+        ++iter;
+      }
+    }
+    if (!need_wait) {  // 表示已获得该tuple锁
+      // 设置txn以及request.granted
+      lock_request_queue.SetGranted(txn->GetTransactionId(), LockMode::EXCLUSIVE);
+      txn->GetExclusiveLockSet()->emplace(rid);
+      return true;
+    }
+    lock_request_queue.cv_.wait(lock);
+  }
+  return false;
 }
 
 bool LockManager::LockUpgrade(Transaction *txn, const RID &rid) {
   std::unique_lock<std::mutex> lock(latch_);
-  // txn被abort的情况
-  if (txn->GetState() != TransactionState::GROWING) {
-    txn->SetState(TransactionState::ABORTED);
-    return false;
-  }
-  auto &lock_request_queue = lock_table_[rid];
-  LockRequest request(txn->GetTransactionId(), LockMode::EXCLUSIVE);
-  if (CanWound(lock_request_queue, txn->GetTransactionId())) {  // wound
-    Wound(txn->GetTransactionId(), rid, lock_request_queue);
-    request.granted_ = true;
-    lock_request_queue.request_queue_.push_front(request);
-  } else {  // wait
-    lock_request_queue.upgrading_ = true;
-    lock_request_queue.request_queue_.push_back(request);
-    auto request_ite = lock_request_queue.request_queue_.rbegin();  // 记录当前请求的索引
-    lock_request_queue.cv_.wait(
-        lock, [request_ite, txn]() { return request_ite->granted_ || txn->GetState() == TransactionState::ABORTED; });
-  }
   if (txn->GetState() == TransactionState::ABORTED) {
     return false;
   }
+  if (txn->GetState() == TransactionState::SHRINKING) {
+    txn->SetState(TransactionState::ABORTED);
+    return false;
+  }
+
+  auto &lock_request_queue = lock_table_[rid];
+  LockRequest request(txn->GetTransactionId(), LockMode::EXCLUSIVE);
+  lock_request_queue.request_queue_.push_back(request);
+  while (txn->GetState() != TransactionState::ABORTED) {
+    auto iter = lock_request_queue.request_queue_.begin();
+    bool need_wait = false;
+    while (iter != lock_request_queue.request_queue_.end()) {
+      if (iter->txn_id_ < txn->GetTransactionId()) {
+        // 当前事务为新事物，则需要等待
+        need_wait = true;
+        break;
+      } else if (iter->txn_id_ > txn->GetTransactionId()) {
+        // 当前事务为老事务，则abort新事务
+        auto trans = TransactionManager::GetTransaction(iter->txn_id_);
+        trans->SetState(TransactionState::ABORTED);
+        if (iter->granted_ && iter->lock_mode_ == LockMode::SHARED) {
+          trans->GetSharedLockSet()->erase(rid);
+        } else if (iter->granted_ && iter->lock_mode_ == LockMode::EXCLUSIVE) {
+          trans->GetExclusiveLockSet()->erase(rid);
+        }
+        iter = lock_request_queue.request_queue_.erase(iter);
+      } else {
+        ++iter;
+      }
+    }
+    if (!need_wait) {  // 表示已获得该tuple锁
+      // 设置txn以及request.granted,同时去除之前的shared锁请求
+      lock_request_queue.SetGranted(txn->GetTransactionId(), LockMode::EXCLUSIVE);
+      lock_request_queue.EraseRequest(txn->GetTransactionId(), LockMode::SHARED);
+      txn->GetSharedLockSet()->erase(rid);
+      txn->GetExclusiveLockSet()->emplace(rid);
+      return true;
+    }
+    lock_request_queue.cv_.wait(lock);
+  }
+  // note：可能有读锁没释放
+  lock_request_queue.EraseRequest(txn->GetTransactionId(), LockMode::SHARED);
   txn->GetSharedLockSet()->erase(rid);
-  txn->GetExclusiveLockSet()->emplace(rid);
-  return true;
+  return false;
 }
 
 bool LockManager::Unlock(Transaction *txn, const RID &rid) {
@@ -148,44 +168,19 @@ bool LockManager::Unlock(Transaction *txn, const RID &rid) {
   auto txn_id = txn->GetTransactionId();
   auto request_ite = std::find_if(lock_request_queue.request_queue_.begin(), lock_request_queue.request_queue_.end(),
                                   [txn_id](const LockRequest &request) { return request.txn_id_ == txn_id; });
-  auto next_request_ite = request_ite;
-  next_request_ite++;
-  
-  lock_request_queue.request_queue_.erase(request_ite);
-  bool has_granted = false;
-  while (next_request_ite != lock_request_queue.request_queue_.end()) {
-    if (!next_request_ite->granted_) {
-      if (next_request_ite == lock_request_queue.request_queue_.begin()) { // no lock
-        next_request_ite->granted_ = true;
-        has_granted = true;
-      } else { // locked
-        auto pre_request_ite = next_request_ite;
-        --pre_request_ite;
-        if (pre_request_ite->granted_ && IsCompatible(pre_request_ite->lock_mode_, next_request_ite->lock_mode_)) { // compatible
-          next_request_ite->granted_ = true;
-          has_granted = true;
-        } else if (CanWound(lock_request_queue, txn->GetTransactionId())) { // wound
-          Wound(txn->GetTransactionId(), rid, lock_request_queue);
-          LockRequest request = *next_request_ite;
-          request.granted_ = true;
-          lock_request_queue.request_queue_.erase(next_request_ite++);
-          lock_request_queue.request_queue_.push_front(request);
-        } else { // continue wait
-          // do nothing
-        }
-      }
-    }
-    next_request_ite++;
+  if (request_ite == lock_request_queue.request_queue_.end()) {
+    return false;
   }
-  txn->GetSharedLockSet()->erase(rid);
-  txn->GetExclusiveLockSet()->erase(rid);
+  if (request_ite->lock_mode_ == LockMode::SHARED) {
+    txn->GetSharedLockSet()->erase(rid);
+  } else {
+    txn->GetExclusiveLockSet()->erase(rid);
+  }
+  lock_request_queue.request_queue_.erase(request_ite);
   if (txn->GetState() == TransactionState::GROWING) {  // 切换状态
     txn->SetState(TransactionState::SHRINKING);
   }
-  if (has_granted) {
-    lock_request_queue.cv_.notify_all();
-  }
-
+  lock_request_queue.cv_.notify_all();
   return true;
 }
 

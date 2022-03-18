@@ -37,15 +37,23 @@ bool InsertExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) {
       if (table_info_->table_->InsertTuple(temp_tuple, rid, exec_ctx_->GetTransaction())) {
         InsertIndexEntry(&temp_tuple, rid);
         return true;
+      } else {
+        throw Exception(ExceptionType::UNKNOWN_TYPE, "Insert fail");
       }
     }
   } else {
     // 从子查询/child_executor获取tuple,并将tuple插入到table_info_->table_中
-    if (child_executor_->Next(tuple, rid)) {
-      if (table_info_->table_->InsertTuple(*tuple, rid, exec_ctx_->GetTransaction())) {
-        InsertIndexEntry(tuple, rid);
-        return true;
+    try {
+      if (child_executor_->Next(tuple, rid)) {
+        if (table_info_->table_->InsertTuple(*tuple, rid, exec_ctx_->GetTransaction())) {
+          InsertIndexEntry(tuple, rid);
+          return true;
+        } else {
+          throw Exception(ExceptionType::UNKNOWN_TYPE, "Insert fail");
+        }
       }
+    } catch (const Exception &e) {
+      throw;
     }
   }
   return false;

@@ -49,6 +49,22 @@ class LockManager {
     std::list<LockRequest> request_queue_;
     std::condition_variable cv_;  // for notifying blocked transactions on this rid
     bool upgrading_ = false;
+  public:
+    void SetGranted(txn_id_t txn_id, LockMode lock_mode) {
+      for (auto iter = request_queue_.begin(); iter != request_queue_.end(); iter++) {
+        if (iter->txn_id_ == txn_id && iter->lock_mode_ == lock_mode) {
+          iter->granted_ = true;
+        }
+      }
+    }
+    void EraseRequest(txn_id_t txn_id, LockMode lock_mode) {
+      for (auto iter = request_queue_.begin(); iter != request_queue_.end(); iter++) {
+        if (iter->txn_id_ == txn_id && iter->lock_mode_ == lock_mode) {
+          request_queue_.erase(iter);
+          return;
+        }
+      }
+    }
   };
 
  public:
@@ -141,8 +157,6 @@ class LockManager {
 
   bool Dfs(txn_id_t txn_id, std::unordered_map<txn_id_t, bool> &visited, txn_id_t *new_txn_id);
 
-  bool CanWound(const LockRequestQueue &lock_request_queue, txn_id_t txn_id);
-  void Wound(txn_id_t txn_id, const RID &rid, LockRequestQueue &lock_request_queue);
  private:
   std::mutex latch_;
   std::atomic<bool> enable_cycle_detection_;

@@ -25,6 +25,7 @@ UpdateExecutor::UpdateExecutor(ExecutorContext *exec_ctx, const UpdatePlanNode *
 void UpdateExecutor::Init() { child_executor_->Init(); }
 
 bool UpdateExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) {
+  auto txn = exec_ctx_->GetTransaction();
   if (child_executor_->Next(tuple, rid)) {
     Tuple insert_tuple = GenerateUpdatedTuple(*tuple);
     if (table_info_->table_->UpdateTuple(insert_tuple, *rid, exec_ctx_->GetTransaction())) {
@@ -38,6 +39,8 @@ bool UpdateExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) {
             *rid, exec_ctx_->GetTransaction());
       }
       return true;
+    } else {
+      throw TransactionAbortException(txn->GetTransactionId(), AbortReason::UPGRADE_CONFLICT);
     }
   }
   return false;
