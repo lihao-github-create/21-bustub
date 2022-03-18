@@ -49,11 +49,12 @@ class LockManager {
     std::list<LockRequest> request_queue_;
     std::condition_variable cv_;  // for notifying blocked transactions on this rid
     bool upgrading_ = false;
-  public:
+
+   public:
     void SetGranted(txn_id_t txn_id, LockMode lock_mode) {
-      for (auto iter = request_queue_.begin(); iter != request_queue_.end(); iter++) {
-        if (iter->txn_id_ == txn_id && iter->lock_mode_ == lock_mode) {
-          iter->granted_ = true;
+      for (auto iter : request_queue_) {
+        if (iter.txn_id_ == txn_id && iter.lock_mode_ == lock_mode) {
+          iter.granted_ = true;
         }
       }
     }
@@ -146,16 +147,7 @@ class LockManager {
   /** Runs cycle detection in the background. */
   void RunCycleDetection();
 
-  bool IsCompatible(LockMode mode1, LockMode mode2) {
-    static bool compatible_matrix[2][2] = {
-        // s, x
-        true, false,  // s
-        false, false  // x
-    };
-    return compatible_matrix[int(mode1)][int(mode2)];
-  }
-
-  bool Dfs(txn_id_t txn_id, std::unordered_map<txn_id_t, bool> &visited, txn_id_t *new_txn_id);
+  bool Dfs(txn_id_t txn_id, txn_id_t *new_txn_id);
 
  private:
   std::mutex latch_;
@@ -166,6 +158,8 @@ class LockManager {
   std::unordered_map<RID, LockRequestQueue> lock_table_;
   /** Waits-for graph representation. */
   std::unordered_map<txn_id_t, std::vector<txn_id_t>> waits_for_;
+  // cycle detect
+  std::unordered_map<txn_id_t, bool> visited_;
 };
 
 }  // namespace bustub

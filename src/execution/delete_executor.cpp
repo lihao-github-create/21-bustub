@@ -38,9 +38,8 @@ bool DeleteExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) {
               *rid, exec_ctx_->GetTransaction());
         }
         return true;
-      } else {
-        throw TransactionAbortException(txn->GetTransactionId(), AbortReason::UPGRADE_CONFLICT);
       }
+      throw TransactionAbortException(txn->GetTransactionId(), AbortReason::UPGRADE_CONFLICT);
     }
   } catch (const Exception &e) {
     throw;

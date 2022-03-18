@@ -11,10 +11,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "concurrency/lock_manager.h"
-#include "concurrency/transaction_manager.h"
-
 #include <utility>
 #include <vector>
+#include "concurrency/transaction_manager.h"
 
 namespace bustub {
 
@@ -42,7 +41,8 @@ bool LockManager::LockShared(Transaction *txn, const RID &rid) {
         // 当前事务为新事物，则需要等待
         need_wait = true;
         break;
-      } else if (iter->txn_id_ > txn->GetTransactionId() && iter->lock_mode_ == LockMode::EXCLUSIVE) {
+      }
+      if (iter->txn_id_ > txn->GetTransactionId() && iter->lock_mode_ == LockMode::EXCLUSIVE) {
         // 当前事务为老事务，则abort新事务
         auto trans = TransactionManager::GetTransaction(iter->txn_id_);
         trans->SetState(TransactionState::ABORTED);
@@ -86,7 +86,8 @@ bool LockManager::LockExclusive(Transaction *txn, const RID &rid) {
         // 当前事务为新事物，则需要等待
         need_wait = true;
         break;
-      } else if (iter->txn_id_ > txn->GetTransactionId()) {
+      }
+      if (iter->txn_id_ > txn->GetTransactionId()) {
         // 当前事务为老事务，则abort新事务
         auto trans = TransactionManager::GetTransaction(iter->txn_id_);
         trans->SetState(TransactionState::ABORTED);
@@ -132,7 +133,8 @@ bool LockManager::LockUpgrade(Transaction *txn, const RID &rid) {
         // 当前事务为新事物，则需要等待
         need_wait = true;
         break;
-      } else if (iter->txn_id_ > txn->GetTransactionId()) {
+      }
+      if (iter->txn_id_ > txn->GetTransactionId()) {
         // 当前事务为老事务，则abort新事务
         auto trans = TransactionManager::GetTransaction(iter->txn_id_);
         trans->SetState(TransactionState::ABORTED);
@@ -190,39 +192,36 @@ void LockManager::RemoveEdge(txn_id_t t1, txn_id_t t2) {
   waits_for_[t1].erase(std::find(waits_for_[t1].begin(), waits_for_[t1].end(), t2));
 }
 
-bool LockManager::Dfs(txn_id_t txn_id, std::unordered_map<txn_id_t, bool> &visited, txn_id_t *new_txn_id) {
-  visited[txn_id] = false;
+bool LockManager::Dfs(txn_id_t txn_id, txn_id_t *new_txn_id) {
+  visited_[txn_id] = false;
   *new_txn_id = *new_txn_id < txn_id ? txn_id : *new_txn_id;
   auto &link_set = waits_for_[txn_id];
   for (auto &link_txn_id : link_set) {
-    auto visited_ite = visited.find(link_txn_id);
-    if (visited_ite != visited.end()) {
+    auto visited_ite = visited_.find(link_txn_id);
+    if (visited_ite != visited_.end()) {
       if (!visited_ite->second) {
         return true;
-      } else {
-        continue;
       }
-    } else {
-      if (Dfs(link_txn_id, visited, new_txn_id)) {
-        return true;
-      }
+      continue;
+    }
+    if (Dfs(link_txn_id, new_txn_id)) {
+      return true;
     }
   }
-  visited[txn_id] = true;
+  visited_[txn_id] = true;
   return false;
 }
 
 bool LockManager::HasCycle(txn_id_t *txn_id) {
   // 通过dfs， 检测是否有环
-  std::unordered_map<txn_id_t, bool>
-      visited;  // bool为false表示该节点访问过，bool为true表示该节点的所有邻接结点都访问过
+  visited_.clear();
   for (auto &waits_for_item : waits_for_) {
-    auto visited_ite = visited.find(waits_for_item.first);
-    if (visited_ite != visited.end()) {  // 此处visited_ite.second一定为true
+    auto visited_ite = visited_.find(waits_for_item.first);
+    if (visited_ite != visited_.end()) {  // 此处visited_ite.second一定为true
       continue;
     }
     *txn_id = -1;
-    if (Dfs(waits_for_item.first, visited, txn_id)) {  // 开启一个新的连通图遍历
+    if (Dfs(waits_for_item.first, txn_id)) {  // 开启一个新的连通图遍历
       return true;
     }
   }

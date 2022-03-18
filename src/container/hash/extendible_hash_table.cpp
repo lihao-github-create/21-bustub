@@ -187,7 +187,7 @@ bool HASH_TABLE_TYPE::SplitInsert(Transaction *transaction, const KeyType &key, 
   }
   // make a link from logical hash table to physical hash table and incre local depth
   uint32_t diff = 1 << split_local_depth;
-  for (uint32_t i = split_bucket_idx; ; i -= diff) {
+  for (uint32_t i = split_bucket_idx;; i -= diff) {
     dir_page->SetBucketPageId(i, split_bucket_page_id);
     dir_page->SetLocalDepth(i, split_local_depth);
     if (i < diff) {
@@ -201,7 +201,7 @@ bool HASH_TABLE_TYPE::SplitInsert(Transaction *transaction, const KeyType &key, 
     dir_page->SetLocalDepth(i, split_local_depth);
   }
   auto split_image_bucket_idx = split_bucket_idx ^ (1 << (split_local_depth - 1));
-  for (uint32_t i = split_image_bucket_idx; ; i -= diff) {
+  for (uint32_t i = split_image_bucket_idx;; i -= diff) {
     dir_page->SetBucketPageId(i, split_image_bucket_page_id);
     dir_page->SetLocalDepth(i, split_local_depth);
     if (i < diff) {
