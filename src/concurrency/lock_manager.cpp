@@ -102,7 +102,7 @@ bool LockManager::LockExclusive(Transaction *txn, const RID &rid) {
       if (iter->txn_id_ < txn->GetTransactionId()) {
         // 当前事务为新事物，则需要等待
         need_wait = true;
-        iter++;
+        ++iter;
         continue;
       }
       if (iter->txn_id_ > txn->GetTransactionId()) {
