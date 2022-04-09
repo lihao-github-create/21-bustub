@@ -21,14 +21,16 @@
 
 namespace bustub {
 
-/** AggregationType enumerates all the possible aggregation functions in our system */
+/** AggregationType enumerates all the possible aggregation functions in our
+ * system */
 enum class AggregationType { CountAggregate, SumAggregate, MinAggregate, MaxAggregate };
 
 /**
  * AggregationPlanNode represents the various SQL aggregation functions.
  * For example, COUNT(), SUM(), MIN() and MAX().
  *
- * NOTE: To simplify this project, AggregationPlanNode must always have exactly one child.
+ * NOTE: To simplify this project, AggregationPlanNode must always have exactly
+ * one child.
  */
 class AggregationPlanNode : public AbstractPlanNode {
  public:
@@ -96,7 +98,8 @@ struct AggregateKey {
   /**
    * Compares two aggregate keys for equality.
    * @param other the other aggregate key to be compared with
-   * @return `true` if both aggregate keys have equivalent group-by expressions, `false` otherwise
+   * @return `true` if both aggregate keys have equivalent group-by expressions,
+   * `false` otherwise
    */
   bool operator==(const AggregateKey &other) const {
     for (uint32_t i = 0; i < other.group_bys_.size(); i++) {

@@ -43,7 +43,8 @@ class NestedLoopJoinPlanNode : public AbstractPlanNode {
   /** @return The predicate to be used in the nested loop join */
   const AbstractExpression *Predicate() const { return predicate_; }
 
-  /** @return The left plan node of the nested loop join, by convention it should be the smaller table */
+  /** @return The left plan node of the nested loop join, by convention it
+   * should be the smaller table */
   const AbstractPlanNode *GetLeftPlan() const {
     BUSTUB_ASSERT(GetChildren().size() == 2, "Nested loop joins should have exactly two children plans.");
     return GetChildAt(0);

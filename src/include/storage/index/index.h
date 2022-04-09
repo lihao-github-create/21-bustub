@@ -69,7 +69,8 @@ class IndexMetadata {
    */
   std::uint32_t GetIndexColumnCount() const { return static_cast<uint32_t>(key_attrs_.size()); }
 
-  /** @return The mapping relation between indexed columns and base table columns */
+  /** @return The mapping relation between indexed columns and base table
+   * columns */
   inline const std::vector<uint32_t> &GetKeyAttrs() const { return key_attrs_; }
 
   /** @return A string representation for debugging */
@@ -124,7 +125,8 @@ class Index {
 
   virtual ~Index() = default;
 
-  /** @return A non-owning pointer to the metadata object associated with the index */
+  /** @return A non-owning pointer to the metadata object associated with the
+   * index */
   IndexMetadata *GetMetadata() const { return metadata_.get(); }
 
   /** @return The number of indexed columns */
@@ -170,7 +172,8 @@ class Index {
   /**
    * Search the index for the provided key.
    * @param key The index key
-   * @param result The collection of RIDs that is populated with results of the search
+   * @param result The collection of RIDs that is populated with results of the
+   * search
    * @param transaction The transaction context
    */
   virtual void ScanKey(const Tuple &key, std::vector<RID> *result, Transaction *transaction) = 0;

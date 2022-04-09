@@ -122,7 +122,8 @@ int B_PLUS_TREE_LEAF_PAGE_TYPE::RemoveAndDeleteRecord(const KeyType &key, const 
  * MERGE
  *****************************************************************************/
 /*
- * Remove all of key & value pairs from this page to "recipient" page. Don't forget
+ * Remove all of key & value pairs from this page to "recipient" page. Don't
+ * forget
  * to update the next_page id in the sibling page
  */
 INDEX_TEMPLATE_ARGUMENTS

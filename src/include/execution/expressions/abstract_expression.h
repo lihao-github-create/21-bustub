@@ -21,14 +21,16 @@
 namespace bustub {
 /**
  * AbstractExpression is the base class of all the expressions in the system.
- * Expressions are modeled as trees, i.e. every expression may have a variable number of children.
+ * Expressions are modeled as trees, i.e. every expression may have a variable
+ * number of children.
  */
 class AbstractExpression {
  public:
   /**
    * Create a new AbstractExpression with the given children and return type.
    * @param children the children of this abstract expression
-   * @param ret_type the return type of this abstract expression when it is evaluated
+   * @param ret_type the return type of this abstract expression when it is
+   * evaluated
    */
   AbstractExpression(std::vector<const AbstractExpression *> &&children, TypeId ret_type)
       : children_{std::move(children)}, ret_type_{ret_type} {}
@@ -36,7 +38,8 @@ class AbstractExpression {
   /** Virtual destructor. */
   virtual ~AbstractExpression() = default;
 
-  /** @return The value obtained by evaluating the tuple with the given schema */
+  /** @return The value obtained by evaluating the tuple with the given schema
+   */
   virtual Value Evaluate(const Tuple *tuple, const Schema *schema) const = 0;
 
   /**
@@ -68,7 +71,8 @@ class AbstractExpression {
   virtual TypeId GetReturnType() const { return ret_type_; }
 
  private:
-  /** The children of this expression. Note that the order of appearance of children may matter. */
+  /** The children of this expression. Note that the order of appearance of
+   * children may matter. */
   std::vector<const AbstractExpression *> children_;
   /** The return type of this expression. */
   TypeId ret_type_;

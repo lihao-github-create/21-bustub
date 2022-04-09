@@ -35,7 +35,8 @@ enum class LogRecordType {
 };
 
 /**
- * For every write operation on the table page, you should write ahead a corresponding log record.
+ * For every write operation on the table page, you should write ahead a
+ *corresponding log record.
  *
  * For EACH log record, HEADER is like (5 fields in common, 20 bytes in total).
  *---------------------------------------------
@@ -51,7 +52,8 @@ enum class LogRecordType {
  *---------------------------------------------------------------
  * For update type log record
  *-----------------------------------------------------------------------------------
- * | HEADER | tuple_rid | tuple_size | old_tuple_data | tuple_size | new_tuple_data |
+ * | HEADER | tuple_rid | tuple_size | old_tuple_data | tuple_size |
+ *new_tuple_data |
  *-----------------------------------------------------------------------------------
  * For new page type log record
  *--------------------------
@@ -106,7 +108,8 @@ class LogRecord {
         log_record_type_(log_record_type),
         prev_page_id_(prev_page_id),
         page_id_(page_id) {
-    // calculate log record size, header size + sizeof(prev_page_id) + sizeof(page_id)
+    // calculate log record size, header size + sizeof(prev_page_id) +
+    // sizeof(page_id)
     size_ = HEADER_SIZE + sizeof(page_id_t) * 2;
   }
 

@@ -93,7 +93,8 @@ class IndexWriteRecord {
   Tuple tuple_;
   /** The old tuple is only used for the update operation. */
   Tuple old_tuple_;
-  /** Each table has an index list, this is the identifier of an index into the list. */
+  /** Each table has an index list, this is the identifier of an index into the
+   * list. */
   index_oid_t index_oid_;
   /** The catalog contains metadata required to locate index. */
   Catalog *catalog_;
@@ -111,7 +112,8 @@ enum class AbortReason {
 };
 
 /**
- * TransactionAbortException is thrown when state of a transaction is changed to ABORTED
+ * TransactionAbortException is thrown when state of a transaction is changed to
+ * ABORTED
  */
 class TransactionAbortException : public std::exception {
   txn_id_t txn_id_;
@@ -129,10 +131,12 @@ class TransactionAbortException : public std::exception {
                " aborted because it can not take locks in the shrinking state\n";
       case AbortReason::UNLOCK_ON_SHRINKING:
         return "Transaction " + std::to_string(txn_id_) +
-               " aborted because it can not excute unlock in the shrinking state\n";
+               " aborted because it can not excute unlock in the shrinking "
+               "state\n";
       case AbortReason::UPGRADE_CONFLICT:
         return "Transaction " + std::to_string(txn_id_) +
-               " aborted because another transaction is already waiting to upgrade its lock\n";
+               " aborted because another transaction is already waiting to "
+               "upgrade its lock\n";
       case AbortReason::DEADLOCK:
         return "Transaction " + std::to_string(txn_id_) + " aborted on deadlock\n";
       case AbortReason::LOCKSHARED_ON_READ_UNCOMMITTED:
@@ -270,7 +274,8 @@ class Transaction {
 
   /** LockManager: the set of shared-locked tuples held by this transaction. */
   std::shared_ptr<std::unordered_set<RID>> shared_lock_set_;
-  /** LockManager: the set of exclusive-locked tuples held by this transaction. */
+  /** LockManager: the set of exclusive-locked tuples held by this transaction.
+   */
   std::shared_ptr<std::unordered_set<RID>> exclusive_lock_set_;
 };
 

@@ -29,7 +29,8 @@
 namespace bustub {
 
 /**
- * A simplified hash table that has all the necessary functionality for aggregations.
+ * A simplified hash table that has all the necessary functionality for
+ * aggregations.
  */
 class SimpleAggregationHashTable {
  public:
@@ -97,7 +98,8 @@ class SimpleAggregationHashTable {
   }
 
   /**
-   * Inserts a value into the hash table and then combines it with the current aggregation.
+   * Inserts a value into the hash table and then combines it with the current
+   * aggregation.
    * @param agg_key the key to be inserted
    * @param agg_val the value to be inserted
    */
@@ -153,7 +155,8 @@ class SimpleAggregationHashTable {
 };
 
 /**
- * AggregationExecutor executes an aggregation operation (e.g. COUNT, SUM, MIN, MAX)
+ * AggregationExecutor executes an aggregation operation (e.g. COUNT, SUM, MIN,
+ * MAX)
  * over the tuples produced by a child executor.
  */
 class AggregationExecutor : public AbstractExecutor {
@@ -162,7 +165,8 @@ class AggregationExecutor : public AbstractExecutor {
    * Construct a new AggregationExecutor instance.
    * @param exec_ctx The executor context
    * @param plan The insert plan to be executed
-   * @param child_executor The child executor from which inserted tuples are pulled (may be `nullptr`)
+   * @param child_executor The child executor from which inserted tuples are
+   * pulled (may be `nullptr`)
    */
   AggregationExecutor(ExecutorContext *exec_ctx, const AggregationPlanNode *plan,
                       std::unique_ptr<AbstractExecutor> &&child);
@@ -206,7 +210,8 @@ class AggregationExecutor : public AbstractExecutor {
  private:
   /** The aggregation plan node */
   const AggregationPlanNode *plan_;
-  /** The child executor that produces tuples over which the aggregation is computed */
+  /** The child executor that produces tuples over which the aggregation is
+   * computed */
   std::unique_ptr<AbstractExecutor> child_;
   /** Simple aggregation hash table */
   SimpleAggregationHashTable aht_;

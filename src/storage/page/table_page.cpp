@@ -53,7 +53,8 @@ bool TablePage::InsertTuple(const Tuple &tuple, RID *rid, Transaction *txn, Lock
     }
   }
 
-  // If there was no free slot left, and we cannot claim it from the free space, then we give up.
+  // If there was no free slot left, and we cannot claim it from the free space,
+  // then we give up.
   if (i == GetTupleCount() && GetFreeSpaceRemaining() < tuple.size_ + SIZE_TUPLE) {
     return false;
   }
@@ -146,7 +147,8 @@ bool TablePage::UpdateTuple(const Tuple &new_tuple, Tuple *old_tuple, const RID 
     }
     return false;
   }
-  // If there is not enuogh space to update, we need to update via delete followed by an insert (not enough space).
+  // If there is not enuogh space to update, we need to update via delete
+  // followed by an insert (not enough space).
   if (GetFreeSpaceRemaining() + tuple_size < new_tuple.size_) {
     return false;
   }
@@ -292,7 +294,8 @@ bool TablePage::GetTuple(const RID &rid, Tuple *tuple, Transaction *txn, LockMan
     }
   }
 
-  // At this point, we have at least a shared lock on the RID. Copy the tuple data into our result.
+  // At this point, we have at least a shared lock on the RID. Copy the tuple
+  // data into our result.
   uint32_t tuple_offset = GetTupleOffsetAtSlot(slot_num);
   tuple->size_ = tuple_size;
   if (tuple->allocated_) {

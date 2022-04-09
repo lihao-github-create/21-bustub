@@ -157,7 +157,8 @@ TEST(CatalogTest, DISABLED_CreateTableTest) {
     }
   }
 
-  // Try inserting a tuple and checking that the catalog lookup gives us the right table
+  // Try inserting a tuple and checking that the catalog lookup gives us the
+  // right table
   {
     std::vector<Value> values{};
     values.emplace_back(ValueFactory::GetIntegerValue(15445));
@@ -529,7 +530,8 @@ TEST(CatalogTest, DISABLED_IndexInteraction0) {
   remove("catalog_test.log");
 }
 
-// Should be able to create and interact with an index that is keyed by two INTEGER values
+// Should be able to create and interact with an index that is keyed by two
+// INTEGER values
 TEST(CatalogTest, DISABLED_IndexInteraction1) {
   auto disk_manager = std::make_unique<DiskManager>("catalog_test.db");
   auto bpm = std::make_unique<BufferPoolManagerInstance>(32, disk_manager.get());
@@ -581,7 +583,8 @@ TEST(CatalogTest, DISABLED_IndexInteraction1) {
   remove("catalog_test.log");
 }
 
-// Should be able to create and interact with an index that is keyed by a single INTEGER column
+// Should be able to create and interact with an index that is keyed by a single
+// INTEGER column
 TEST(CatalogTest, DISABLED_IndexInteraction2) {
   auto disk_manager = std::make_unique<DiskManager>("catalog_test.db");
   auto bpm = std::make_unique<BufferPoolManagerInstance>(32, disk_manager.get());

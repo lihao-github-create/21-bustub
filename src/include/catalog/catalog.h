@@ -177,7 +177,8 @@ class Catalog {
   }
 
   /**
-   * Create a new index, populate existing data of the table and return its metadata.
+   * Create a new index, populate existing data of the table and return its
+   * metadata.
    * @param txn The transaction in which the table is being created
    * @param index_name The name of the new index
    * @param table_name The name of the table
@@ -197,7 +198,8 @@ class Catalog {
       return NULL_INDEX_INFO;
     }
 
-    // If the table exists, an entry for the table should already be present in index_names_
+    // If the table exists, an entry for the table should already be present in
+    // index_names_
     BUSTUB_ASSERT((index_names_.find(table_name) != index_names_.end()), "Broken Invariant");
 
     // Determine if the requested index already exists for this table
@@ -227,7 +229,8 @@ class Catalog {
     // Get the next OID for the new index
     const auto index_oid = next_index_oid_.fetch_add(1);
 
-    // Construct index information; IndexInfo takes ownership of the Index itself
+    // Construct index information; IndexInfo takes ownership of the Index
+    // itself
     auto index_info =
         std::make_unique<IndexInfo>(key_schema, index_name, std::move(index), index_oid, table_name, keysize);
     auto *tmp = index_info.get();
@@ -298,8 +301,10 @@ class Catalog {
 
   /**
    * Get all of the indexes for the table identified by `table_name`.
-   * @param table_name The name of the table for which indexes should be retrieved
-   * @return A vector of IndexInfo* for each index on the given table, empty vector
+   * @param table_name The name of the table for which indexes should be
+   * retrieved
+   * @return A vector of IndexInfo* for each index on the given table, empty
+   * vector
    * in the event that the table exists but no indexes have been created for it
    */
   std::vector<IndexInfo *> GetTableIndexes(const std::string &table_name) {

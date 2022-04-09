@@ -17,8 +17,10 @@
 namespace bustub {
 
 /**
- * Database use the first page (page_id = 0) as header page to store metadata, in
- * our case, we will contain information about table/index name (length less than
+ * Database use the first page (page_id = 0) as header page to store metadata,
+ * in
+ * our case, we will contain information about table/index name (length less
+ * than
  * 32 bytes) and their corresponding root_id
  *
  * Format (size in byte):

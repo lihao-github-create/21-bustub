@@ -96,7 +96,8 @@ uint32_t HashTableDirectoryPage::GetLocalHighBit(uint32_t bucket_idx) {
  * (3) The LD is the same at each index with the same bucket_page_id
  */
 void HashTableDirectoryPage::VerifyIntegrity() {
-  //  build maps of {bucket_page_id : pointer_count} and {bucket_page_id : local_depth}
+  //  build maps of {bucket_page_id : pointer_count} and {bucket_page_id :
+  //  local_depth}
   std::unordered_map<page_id_t, uint32_t> page_id_to_count = std::unordered_map<page_id_t, uint32_t>();
   std::unordered_map<page_id_t, uint32_t> page_id_to_ld = std::unordered_map<page_id_t, uint32_t>();
 
@@ -110,8 +111,10 @@ void HashTableDirectoryPage::VerifyIntegrity() {
 
     if (page_id_to_ld.count(curr_page_id) > 0 && curr_ld != page_id_to_ld[curr_page_id]) {
       uint32_t old_ld = page_id_to_ld[curr_page_id];
-      LOG_WARN("Verify Integrity: curr_local_depth: %u, old_local_depth %u, for page_id: %u", curr_ld, old_ld,
-               curr_page_id);
+      LOG_WARN(
+          "Verify Integrity: curr_local_depth: %u, old_local_depth %u, "
+          "for page_id: %u",
+          curr_ld, old_ld, curr_page_id);
       PrintDirectory();
       assert(curr_ld == page_id_to_ld[curr_page_id]);
     } else {
@@ -128,8 +131,10 @@ void HashTableDirectoryPage::VerifyIntegrity() {
     uint32_t required_count = 0x1 << (global_depth_ - curr_ld);
 
     if (curr_count != required_count) {
-      LOG_WARN("Verify Integrity: curr_count: %u, required_count %u, for page_id: %u", curr_ld, required_count,
-               curr_page_id);
+      LOG_WARN(
+          "Verify Integrity: curr_count: %u, required_count %u, for "
+          "page_id: %u",
+          curr_ld, required_count, curr_page_id);
       PrintDirectory();
       assert(curr_count == required_count);
     }

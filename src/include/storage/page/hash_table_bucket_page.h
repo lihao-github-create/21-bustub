@@ -34,7 +34,8 @@ namespace bustub {
  *
  *  Here '+' means concatenation.
  *  The above format omits the space required for the occupied_ and
- *  readable_ arrays. More information is in storage/page/hash_table_page_defs.h.
+ *  readable_ arrays. More information is in
+ * storage/page/hash_table_page_defs.h.
  *
  */
 // 用于操纵Page content

@@ -150,7 +150,8 @@ class ExecutorTest : public ::testing::Test {
   /**
    * Make a comparison expression.
    * @param lhs The abstract expression for the left-hand side of the comparison
-   * @param rhs The abstract expression for the right-hand side of the comparison
+   * @param rhs The abstract expression for the right-hand side of the
+   * comparison
    * @param comp_type The type of the comparison operation
    * @return A non-owning pointer to the ComparisonExpression
    */
@@ -163,7 +164,8 @@ class ExecutorTest : public ::testing::Test {
   /**
    * Allocate a comparison expression and return it to the caller.
    * @param lhs The abstract expression for the left-hand side of the comparison
-   * @param rhs The abstract expression for the right-hand side of the comparison
+   * @param rhs The abstract expression for the right-hand side of the
+   * comparison
    * @param comp_type The type of the comparison operation
    * @return An owning pointer to the ComparisonExpression
    */
@@ -175,7 +177,8 @@ class ExecutorTest : public ::testing::Test {
 
   /**
    * Make an aggregate value expression.
-   * @param is_group_by_term `true` if the expression is a group-by term, `false` otherwise
+   * @param is_group_by_term `true` if the expression is a group-by term,
+   * `false` otherwise
    * @param term_idx The index of the term in the aggregates or group-bys
    * @return A non-owning pointer to the AggregateValueExpression
    */
@@ -187,7 +190,8 @@ class ExecutorTest : public ::testing::Test {
 
   /**
    * Allocate an aggregate value expression and return it to the caller.
-   * @param is_group_by_term `true` if the expression is a group-by term, `false` otherwise
+   * @param is_group_by_term `true` if the expression is a group-by term,
+   * `false` otherwise
    * @param term_idx The index of the term in the aggregates or group-bys
    * @return An owning pointer to the AggregateValueExpression
    */

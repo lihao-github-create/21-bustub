@@ -20,13 +20,16 @@
 
 namespace bustub {
 /**
- * ColumnValueExpression maintains the tuple index and column index relative to a particular schema or join.
+ * ColumnValueExpression maintains the tuple index and column index relative to
+ * a particular schema or join.
  */
 class ColumnValueExpression : public AbstractExpression {
  public:
   /**
-   * ColumnValueExpression is an abstraction around "Table.member" in terms of indexes.
-   * @param tuple_idx {tuple index 0 = left side of join, tuple index 1 = right side of join}
+   * ColumnValueExpression is an abstraction around "Table.member" in terms of
+   * indexes.
+   * @param tuple_idx {tuple index 0 = left side of join, tuple index 1 = right
+   * side of join}
    * @param col_idx the index of the column in the schema
    * @param ret_type the return type of the expression
    */
@@ -51,7 +54,8 @@ class ColumnValueExpression : public AbstractExpression {
  private:
   /** Tuple index 0 = left side of join, tuple index 1 = right side of join */
   uint32_t tuple_idx_;
-  /** Column index refers to the index within the schema of the tuple, e.g. schema {A,B,C} has indexes {0,1,2} */
+  /** Column index refers to the index within the schema of the tuple, e.g.
+   * schema {A,B,C} has indexes {0,1,2} */
   uint32_t col_idx_;
 };
 }  // namespace bustub

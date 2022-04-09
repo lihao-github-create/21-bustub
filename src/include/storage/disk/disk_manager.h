@@ -23,8 +23,10 @@
 namespace bustub {
 
 /**
- * DiskManager takes care of the allocation and deallocation of pages within a database. It performs the reading and
- * writing of pages to and from disk, providing a logical file layer within the context of a database management system.
+ * DiskManager takes care of the allocation and deallocation of pages within a
+ * database. It performs the reading and
+ * writing of pages to and from disk, providing a logical file layer within the
+ * context of a database management system.
  */
 class DiskManager {
  public:

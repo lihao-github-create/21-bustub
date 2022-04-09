@@ -201,7 +201,8 @@ class RowMatrix : public Matrix<T> {
    *
    * TODO(P0):
    * - Allocate the array of row pointers in the constructor.
-   * - Use these pointers to point to corresponding elements of the `linear` array.
+   * - Use these pointers to point to corresponding elements of the `linear`
+   * array.
    * - Don't forget to deallocate the array in the destructor.
    */
   T **data_;
@@ -240,7 +241,8 @@ class RowMatrixOperations {
   }
 
   /**
-   * Compute the matrix multiplication (`matrixA` * `matrixB` and return the result.
+   * Compute the matrix multiplication (`matrixA` * `matrixB` and return the
+   * result.
    * Return `nullptr` if dimensions mismatch for input matrices.
    * @param matrixA Input matrix
    * @param matrixB Input matrix
@@ -268,7 +270,8 @@ class RowMatrixOperations {
   }
 
   /**
-   * Simplified General Matrix Multiply operation. Compute (`matrixA` * `matrixB` + `matrixC`).
+   * Simplified General Matrix Multiply operation. Compute (`matrixA` *
+   * `matrixB` + `matrixC`).
    * Return `nullptr` if dimensions mismatch for input matrices.
    * @param matrixA Input matrix
    * @param matrixB Input matrix

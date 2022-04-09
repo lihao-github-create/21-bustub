@@ -20,7 +20,8 @@
 
 namespace bustub {
 /**
- * AggregateValueExpression represents aggregations such as MAX(a), MIN(b), COUNT(c)
+ * AggregateValueExpression represents aggregations such as MAX(a), MIN(b),
+ * COUNT(c)
  */
 class AggregateValueExpression : public AbstractExpression {
  public:

@@ -24,7 +24,8 @@ namespace bustub {
 class Schema {
  public:
   /**
-   * Constructs the schema corresponding to the vector of columns, read left-to-right.
+   * Constructs the schema corresponding to the vector of columns, read
+   * left-to-right.
    * @param columns columns that describe the schema's individual columns
    */
   explicit Schema(const std::vector<Column> &columns);
@@ -49,10 +50,12 @@ class Schema {
   const Column &GetColumn(const uint32_t col_idx) const { return columns_[col_idx]; }
 
   /**
-   * Looks up and returns the index of the first column in the schema with the specified name.
+   * Looks up and returns the index of the first column in the schema with the
+   * specified name.
    * If multiple columns have the same name, the first such index is returned.
    * @param col_name name of column to look for
-   * @return the index of a column with the given name, throws an exception if it does not exist
+   * @return the index of a column with the given name, throws an exception if
+   * it does not exist
    */
   uint32_t GetColIdx(const std::string &col_name) const {
     for (uint32_t i = 0; i < columns_.size(); ++i) {

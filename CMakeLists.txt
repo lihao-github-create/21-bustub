@@ -23,6 +23,8 @@ endif ()
 set(BUSTUB_BUILD_SUPPORT_DIR "${CMAKE_SOURCE_DIR}/build_support")
 set(BUSTUB_CLANG_SEARCH_PATH "/usr/local/bin" "/usr/bin" "/usr/local/opt/llvm/bin" "/usr/local/opt/llvm@8/bin"
         "/usr/local/Cellar/llvm/8.0.1/bin")
+set(CLANG_TIDY_BIN "/usr/bin/clang-tidy-8")
+set(CLANG_FORMAT_BIN "/usr/bin/clang-format-8")
 
 ######################################################################################################################
 # DEPENDENCIES
@@ -74,7 +76,7 @@ configure_file("${PROJECT_SOURCE_DIR}/build_support/gtest_CMakeLists.txt.in" goo
 execute_process(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
         WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download")
 execute_process(COMMAND "${CMAKE_COMMAND}" --build .
-       WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download")
+        WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download")
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)  # don't override our compiler/linker options when building gtest
 add_subdirectory("${CMAKE_BINARY_DIR}/googletest-src" "${CMAKE_BINARY_DIR}/googletest-build")
 

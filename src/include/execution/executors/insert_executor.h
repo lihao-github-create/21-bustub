@@ -35,7 +35,8 @@ class InsertExecutor : public AbstractExecutor {
    * Construct a new InsertExecutor instance.
    * @param exec_ctx The executor context
    * @param plan The insert plan to be executed
-   * @param child_executor The child executor from which inserted tuples are pulled (may be `nullptr`)
+   * @param child_executor The child executor from which inserted tuples are
+   * pulled (may be `nullptr`)
    */
   InsertExecutor(ExecutorContext *exec_ctx, const InsertPlanNode *plan,
                  std::unique_ptr<AbstractExecutor> &&child_executor);

@@ -9,9 +9,9 @@
 // Copyright (c) 2015-2021, Carnegie Mellon University Database Group
 //
 //===----------------------------------------------------------------------===//
-#include <memory>
-
 #include "execution/executors/update_executor.h"
+
+#include <memory>
 
 namespace bustub {
 
@@ -26,21 +26,32 @@ void UpdateExecutor::Init() { child_executor_->Init(); }
 
 bool UpdateExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) {
   auto txn = exec_ctx_->GetTransaction();
+  auto lock_mgr = exec_ctx_->GetLockManager();
   if (child_executor_->Next(tuple, rid)) {
     Tuple insert_tuple = GenerateUpdatedTuple(*tuple);
-    if (table_info_->table_->UpdateTuple(insert_tuple, *rid, exec_ctx_->GetTransaction())) {
+    if (txn->IsSharedLocked(*rid)) {  // repeateable read
+      lock_mgr->LockUpgrade(txn, *rid);
+    } else if (!txn->IsExclusiveLocked(*rid)) {  // 所有隔离级别都有可能
+      lock_mgr->LockExclusive(txn, *rid);
+    }
+    if (txn->GetState() == TransactionState::ABORTED) {
+      throw Exception(ExceptionType::UNKNOWN_TYPE, "Delete fail");
+    }
+    if (table_info_->table_->UpdateTuple(insert_tuple, *rid, txn)) {
       auto index_infos = exec_ctx_->GetCatalog()->GetTableIndexes(table_info_->name_);
       for (auto &index_info : index_infos) {
         index_info->index_->DeleteEntry(
             tuple->KeyFromTuple(table_info_->schema_, index_info->key_schema_, index_info->index_->GetKeyAttrs()), *rid,
-            exec_ctx_->GetTransaction());
+            txn);
         index_info->index_->InsertEntry(
             insert_tuple.KeyFromTuple(table_info_->schema_, index_info->key_schema_, index_info->index_->GetKeyAttrs()),
-            *rid, exec_ctx_->GetTransaction());
+            *rid, txn);
+        IndexWriteRecord index_record(*rid, table_info_->oid_, WType::UPDATE, insert_tuple, index_info->index_oid_,
+                                      exec_ctx_->GetCatalog());
+        index_record.old_tuple_ = *tuple;
+        txn->AppendTableWriteRecord(index_record);
       }
       return true;
-    } else {
-      throw TransactionAbortException(txn->GetTransactionId(), AbortReason::UPGRADE_CONFLICT);
     }
   }
   return false;

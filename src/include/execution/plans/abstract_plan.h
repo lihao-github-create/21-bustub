@@ -35,15 +35,18 @@ enum class PlanType {
 };
 
 /**
- * AbstractPlanNode represents all the possible types of plan nodes in our system.
- * Plan nodes are modeled as trees, so each plan node can have a variable number of children.
+ * AbstractPlanNode represents all the possible types of plan nodes in our
+ * system.
+ * Plan nodes are modeled as trees, so each plan node can have a variable number
+ * of children.
  * Per the Volcano model, the plan node receives the tuples of its children.
  * The ordering of the children may matter.
  */
 class AbstractPlanNode {
  public:
   /**
-   * Create a new AbstractPlanNode with the specified output schema and children.
+   * Create a new AbstractPlanNode with the specified output schema and
+   * children.
    * @param output_schema the schema for the output of this plan node
    * @param children the children of this plan node
    */
@@ -67,7 +70,8 @@ class AbstractPlanNode {
 
  private:
   /**
-   * The schema for the output of this plan node. In the volcano model, every plan node will spit out tuples,
+   * The schema for the output of this plan node. In the volcano model, every
+   * plan node will spit out tuples,
    * and this tells you what schema this plan node's tuples will have.
    */
   const Schema *output_schema_;

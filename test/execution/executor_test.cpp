@@ -71,7 +71,8 @@
  * key DBMS components, such as the disk manager, the  buffer pool manager,
  * and the catalog, among others. Furthermore, this text fixture also
  * populates the test tables used by all unit tests. This is accomplished
- * with the help of the `TableGenerator` class via a call to `GenerateTestTables()`.
+ * with the help of the `TableGenerator` class via a call to
+ * `GenerateTestTables()`.
  *
  * See the definition of `TableGenerator::GenerateTestTables()` for the
  * schema of each of the tables used in the tests below. The definition of
@@ -372,7 +373,8 @@ TEST_F(ExecutorTest, SimpleDeleteTest) {
   index_info->index_->ScanKey(index_key, &rids, GetTxn());
   ASSERT_TRUE(rids.empty());
 }
-// SELECT test_1.col_a, test_1.col_b, test_2.col1, test_2.col3 FROM test_1 JOIN test_2 ON test_1.col_a = test_2.col1;
+// SELECT test_1.col_a, test_1.col_b, test_2.col1, test_2.col3 FROM test_1 JOIN
+// test_2 ON test_1.col_a = test_2.col1;
 TEST_F(ExecutorTest, DISABLED_SimpleNestedLoopJoinTest) {
   const Schema *out_schema1;
   std::unique_ptr<AbstractPlanNode> scan_plan1;
@@ -399,10 +401,12 @@ TEST_F(ExecutorTest, DISABLED_SimpleNestedLoopJoinTest) {
   const Schema *out_final;
   std::unique_ptr<NestedLoopJoinPlanNode> join_plan;
   {
-    // col_a and col_b have a tuple index of 0 because they are the left side of the join
+    // col_a and col_b have a tuple index of 0 because they are the left side of
+    // the join
     auto col_a = MakeColumnValueExpression(*out_schema1, 0, "colA");
     auto col_b = MakeColumnValueExpression(*out_schema1, 0, "colB");
-    // col1 and col2 have a tuple index of 1 because they are the right side of the join
+    // col1 and col2 have a tuple index of 1 because they are the right side of
+    // the join
     auto col1 = MakeColumnValueExpression(*out_schema2, 1, "col1");
     auto col3 = MakeColumnValueExpression(*out_schema2, 1, "col3");
     auto predicate = MakeComparisonExpression(col_a, col1, ComparisonType::Equal);
@@ -416,7 +420,8 @@ TEST_F(ExecutorTest, DISABLED_SimpleNestedLoopJoinTest) {
   ASSERT_EQ(result_set.size(), 100);
 }
 
-// SELECT test_4.colA, test_4.colB, test_6.colA, test_6.colB FROM test_4 JOIN test_6 ON test_4.colA = test_6.colA;
+// SELECT test_4.colA, test_4.colB, test_6.colA, test_6.colB FROM test_4 JOIN
+// test_6 ON test_4.colA = test_6.colA;
 TEST_F(ExecutorTest, SimpleHashJoinTest) {
   // Construct sequential scan of table test_4
   const Schema *out_schema1{};
@@ -446,11 +451,13 @@ TEST_F(ExecutorTest, SimpleHashJoinTest) {
   const Schema *out_schema{};
   std::unique_ptr<HashJoinPlanNode> join_plan{};
   {
-    // Columns from Table 4 have a tuple index of 0 because they are the left side of the join (outer relation)
+    // Columns from Table 4 have a tuple index of 0 because they are the left
+    // side of the join (outer relation)
     auto *table4_col_a = MakeColumnValueExpression(*out_schema1, 0, "colA");
     auto *table4_col_b = MakeColumnValueExpression(*out_schema1, 0, "colB");
 
-    // Columns from Table 6 have a tuple index of 1 because they are the right side of the join (inner relation)
+    // Columns from Table 6 have a tuple index of 1 because they are the right
+    // side of the join (inner relation)
     auto *table6_col_a = MakeColumnValueExpression(*out_schema2, 1, "colA");
     auto *table6_col_b = MakeColumnValueExpression(*out_schema2, 1, "colB");
 
@@ -535,7 +542,8 @@ TEST_F(ExecutorTest, SimpleAggregationTest) {
   ASSERT_EQ(result_set.size(), 1);
 }
 
-// SELECT count(col_a), col_b, sum(col_c) FROM test_1 Group By col_b HAVING count(col_a) > 100
+// SELECT count(col_a), col_b, sum(col_c) FROM test_1 Group By col_b HAVING
+// count(col_a) > 100
 TEST_F(ExecutorTest, SimpleGroupByAggregation) {
   const Schema *scan_schema;
   std::unique_ptr<AbstractPlanNode> scan_plan;

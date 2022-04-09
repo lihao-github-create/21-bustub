@@ -18,14 +18,16 @@
 
 namespace bustub {
 /**
- * IndexScanPlanNode identifies a table that should be scanned with an optional predicate.
+ * IndexScanPlanNode identifies a table that should be scanned with an optional
+ * predicate.
  */
 class IndexScanPlanNode : public AbstractPlanNode {
  public:
   /**
    * Creates a new index scan plan node.
    * @param output the output format of this scan plan node
-   * @param predicate the predicate to scan with, tuples are returned if predicate(tuple) == true or predicate ==
+   * @param predicate the predicate to scan with, tuples are returned if
+   * predicate(tuple) == true or predicate ==
    * nullptr
    * @param table_oid the identifier of table to be scanned
    */
@@ -34,7 +36,8 @@ class IndexScanPlanNode : public AbstractPlanNode {
 
   PlanType GetType() const override { return PlanType::IndexScan; }
 
-  /** @return the predicate to test tuples against; tuples should only be returned if they evaluate to true */
+  /** @return the predicate to test tuples against; tuples should only be
+   * returned if they evaluate to true */
   const AbstractExpression *GetPredicate() const { return predicate_; }
 
   /** @return the identifier of the table that should be scanned */

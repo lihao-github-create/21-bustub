@@ -49,7 +49,8 @@ bool TableHeap::InsertTuple(const Tuple &tuple, RID *rid, Transaction *txn) {
   }
 
   cur_page->WLatch();
-  // Insert into the first page with enough space. If no such page exists, create a new page and insert into that.
+  // Insert into the first page with enough space. If no such page exists,
+  // create a new page and insert into that.
   // INVARIANT: cur_page is WLatched if you leave the loop normally.
   while (!cur_page->InsertTuple(tuple, rid, txn, lock_manager_, log_manager_)) {
     auto next_page_id = cur_page->GetNextPageId();
@@ -171,13 +172,15 @@ bool TableHeap::GetTuple(const RID &rid, Tuple *tuple, Transaction *txn) {
 
 TableIterator TableHeap::Begin(Transaction *txn) {
   // Start an iterator from the first page.
-  // TODO(Wuwen): Hacky fix for now. Removing empty pages is a better way to handle this.
+  // TODO(Wuwen): Hacky fix for now. Removing empty pages is a better way to
+  // handle this.
   RID rid;
   auto page_id = first_page_id_;
   while (page_id != INVALID_PAGE_ID) {
     auto page = static_cast<TablePage *>(buffer_pool_manager_->FetchPage(page_id));
     page->RLatch();
-    // If this fails because there is no tuple, then RID will be the default-constructed value, which means EOF.
+    // If this fails because there is no tuple, then RID will be the
+    // default-constructed value, which means EOF.
     auto found_tuple = page->GetFirstTupleRid(&rid);
     page->RUnlatch();
     buffer_pool_manager_->UnpinPage(page_id, false);

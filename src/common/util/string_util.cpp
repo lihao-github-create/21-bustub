@@ -70,7 +70,8 @@ std::vector<std::string> StringUtil::Split(const std::string &str, char delimite
 std::string StringUtil::Join(const std::vector<std::string> &input, const std::string &separator) {
   std::string result;
 
-  // If the input isn't empty, append the first element. We do this so we don't need to introduce an if into the loop.
+  // If the input isn't empty, append the first element. We do this so we don't
+  // need to introduce an if into the loop.
   if (!input.empty()) {
     result += input[0];
   }
@@ -142,7 +143,8 @@ std::string StringUtil::Lower(const std::string &str) {
   return (copy);
 }
 
-// NOLINTNEXTLINE - it wants us to take fmt_str as const&, but we shouldn't do that since we use it in va_args.
+// NOLINTNEXTLINE - it wants us to take fmt_str as const&, but we shouldn't do
+// that since we use it in va_args.
 std::string StringUtil::Format(std::string fmt_str, ...) {
   // http://stackoverflow.com/a/8098080
   // Reserve two times as much as the length of the format string.
@@ -191,7 +193,8 @@ std::vector<std::string> StringUtil::Split(const std::string &input, const std::
 }
 
 std::string StringUtil::Strip(const std::string &str, char c) {
-  // There's a copy here which is wasteful, so don't use this in performance-critical code!
+  // There's a copy here which is wasteful, so don't use this in
+  // performance-critical code!
   std::string tmp = str;
   tmp.erase(std::remove(tmp.begin(), tmp.end(), c), tmp.end());
   return tmp;

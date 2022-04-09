@@ -236,7 +236,8 @@ TEST_F(RecoveryTest, DISABLED_CheckpointTest) {
   auto val_0 = tuple.GetValue(&schema, 0);
   auto val_1 = tuple.GetValue(&schema, 1);
 
-  // set log time out very high so that flush doesn't happen before checkpoint is performed
+  // set log time out very high so that flush doesn't happen before checkpoint
+  // is performed
   log_timeout = std::chrono::seconds(15);
 
   // insert a ton of tuples

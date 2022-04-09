@@ -36,7 +36,8 @@ class TransactionManager {
 
   /**
    * Begins a new transaction.
-   * @param txn an optional transaction object to be initialized, otherwise a new transaction is created.
+   * @param txn an optional transaction object to be initialized, otherwise a
+   * new transaction is created.
    * @param isolation_level an optional isolation level of the transaction.
    * @return an initialized transaction
    */
@@ -58,7 +59,8 @@ class TransactionManager {
    * Global list of running transactions
    */
 
-  /** The transaction map is a global list of all the running transactions in the system. */
+  /** The transaction map is a global list of all the running transactions in
+   * the system. */
   static std::unordered_map<txn_id_t, Transaction *> txn_map;
 
   /**
@@ -73,7 +75,8 @@ class TransactionManager {
     return res;
   }
 
-  /** Prevents all transactions from performing operations, used for checkpointing. */
+  /** Prevents all transactions from performing operations, used for
+   * checkpointing. */
   void BlockAllTransactions();
 
   /** Resumes all transactions, used for checkpointing. */

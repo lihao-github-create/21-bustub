@@ -31,7 +31,8 @@ namespace bustub {
  *
  * Directory format (size in byte):
  * --------------------------------------------------------------------------------------------
- * | LSN (4) | PageId(4) | GlobalDepth(4) | LocalDepths(512) | BucketPageIds(2048) | Free(1524)
+ * | LSN (4) | PageId(4) | GlobalDepth(4) | LocalDepths(512) |
+ * BucketPageIds(2048) | Free(1524)
  * --------------------------------------------------------------------------------------------
  */
 // 实际上对应于PPT上的global + bucket pointers array, 就是它们的一种封装
@@ -81,7 +82,8 @@ class HashTableDirectoryPage {
    * Gets the split image of an index
    *
    * @param bucket_idx the directory index for which to find the split image
-   * @return the directory index of the split image(可以理解为由同一个桶指针分裂而来)
+   * @return the directory index of the split
+   *image(可以理解为由同一个桶指针分裂而来)
    **/
   uint32_t GetSplitImageIndex(uint32_t bucket_idx);
 
@@ -97,7 +99,8 @@ class HashTableDirectoryPage {
    * upwards.  For example, global depth 3 corresponds to 0x00000007 in a 32-bit
    * representation.
    *
-   * @return mask of global_depth 1's and the rest 0's (with 1's from LSB upwards)
+   * @return mask of global_depth 1's and the rest 0's (with 1's from LSB
+   * upwards)
    */
   uint32_t GetGlobalDepthMask();
 

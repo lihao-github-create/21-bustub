@@ -19,7 +19,8 @@
 namespace bustub {
 
 /**
- * CheckpointManager creates consistent checkpoints by blocking all other transactions temporarily.
+ * CheckpointManager creates consistent checkpoints by blocking all other
+ * transactions temporarily.
  */
 class CheckpointManager {
  public:

@@ -27,7 +27,8 @@ ParallelBufferPoolManager::ParallelBufferPoolManager(size_t num_instances, size_
   pool_size_ = pool_size * num_instances_;
 }
 
-// Update deconstructor to destruct all BufferPoolManagerInstances and deallocate any associated memory
+// Update deconstructor to destruct all BufferPoolManagerInstances and
+// deallocate any associated memory
 ParallelBufferPoolManager::~ParallelBufferPoolManager() {
   BufferPoolManager *bufferpool = nullptr;
   for (size_t i = 0; i < num_instances_; i++) {
@@ -42,7 +43,8 @@ size_t ParallelBufferPoolManager::GetPoolSize() {
 }
 
 BufferPoolManager *ParallelBufferPoolManager::GetBufferPoolManager(page_id_t page_id) {
-  // Get BufferPoolManager responsible for handling given page id. You can use this method in your other methods.
+  // Get BufferPoolManager responsible for handling given page id. You can use
+  // this method in your other methods.
   size_t instance_index = page_id % num_instances_;
   return bufferpool_instances_[instance_index];
 }
@@ -66,11 +68,14 @@ bool ParallelBufferPoolManager::FlushPgImp(page_id_t page_id) {
 }
 
 Page *ParallelBufferPoolManager::NewPgImp(page_id_t *page_id) {
-  // create new page. We will request page allocation in a round robin manner from the underlying
+  // create new page. We will request page allocation in a round robin manner
+  // from the underlying
   // BufferPoolManagerInstances
-  // 1.   From a starting index of the BPMIs, call NewPageImpl until either 1) success and return 2) looped around to
+  // 1.   From a starting index of the BPMIs, call NewPageImpl until either 1)
+  // success and return 2) looped around to
   // starting index and return nullptr
-  // 2.   Bump the starting index (mod number of instances) to start search at a different BPMI each time this function
+  // 2.   Bump the starting index (mod number of instances) to start search at a
+  // different BPMI each time this function
   // is called
   Page *page = nullptr;
   for (size_t i = 0; i < num_instances_; i++) {

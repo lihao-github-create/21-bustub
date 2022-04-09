@@ -10,9 +10,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include <memory>
-
 #include "execution/executors/delete_executor.h"
+
+#include <memory>
 
 namespace bustub {
 
@@ -27,23 +27,27 @@ void DeleteExecutor::Init() { child_executor_->Init(); }
 
 bool DeleteExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) {
   auto txn = exec_ctx_->GetTransaction();
-  try {
-    if (child_executor_->Next(tuple, rid)) {
-      if (table_info_->table_->MarkDelete(*rid, exec_ctx_->GetTransaction())) {
-        auto index_infos = exec_ctx_->GetCatalog()->GetTableIndexes(table_info_->name_);
-        for (auto &index_info : index_infos) {
-          index_info->index_->DeleteEntry(
-              tuple->KeyFromTuple(*child_executor_->GetOutputSchema(), index_info->key_schema_,
-                                  index_info->index_->GetKeyAttrs()),
-              *rid, exec_ctx_->GetTransaction());
-        }
-        return true;
-      } else {
-        throw TransactionAbortException(txn->GetTransactionId(), AbortReason::UPGRADE_CONFLICT);
-      }
+  auto lock_mgr = exec_ctx_->GetLockManager();
+  if (child_executor_->Next(tuple, rid)) {
+    if (txn->IsSharedLocked(*rid)) {  // repeateable read
+      lock_mgr->LockUpgrade(txn, *rid);
+    } else if (!txn->IsExclusiveLocked(*rid)) {  // 所有隔离级别都有可能
+      lock_mgr->LockExclusive(txn, *rid);
     }
-  } catch (const Exception &e) {
-    throw;
+    if (txn->GetState() == TransactionState::ABORTED) {
+      throw Exception(ExceptionType::UNKNOWN_TYPE, "Delete fail");
+    }
+    if (table_info_->table_->MarkDelete(*rid, txn)) {
+      auto index_infos = exec_ctx_->GetCatalog()->GetTableIndexes(table_info_->name_);
+      for (auto &index_info : index_infos) {
+        index_info->index_->DeleteEntry(tuple->KeyFromTuple(*child_executor_->GetOutputSchema(),
+                                                            index_info->key_schema_, index_info->index_->GetKeyAttrs()),
+                                        *rid, txn);
+        txn->AppendTableWriteRecord(IndexWriteRecord(*rid, table_info_->oid_, WType::DELETE, *tuple,
+                                                     index_info->index_oid_, exec_ctx_->GetCatalog()));
+      }
+      return true;
+    }
   }
   return false;
 }

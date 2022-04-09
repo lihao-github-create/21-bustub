@@ -18,7 +18,8 @@
 namespace bustub {
 
 /**
- * StringUtil provides INEFFICIENT utility functions for working with strings. They should only be used for debugging.
+ * StringUtil provides INEFFICIENT utility functions for working with strings.
+ * They should only be used for debugging.
  */
 class StringUtil {
  public:
@@ -28,7 +29,8 @@ class StringUtil {
   /** @return true if target string starts with given prefix, false otherwise */
   static bool StartsWith(const std::string &str, const std::string &prefix);
 
-  /** @return true if target string ends with the given suffix, false otherwise */
+  /** @return true if target string ends with the given suffix, false otherwise
+   */
   static bool EndsWith(const std::string &str, const std::string &suffix);
 
   /** @return str repeated n times */
@@ -43,10 +45,12 @@ class StringUtil {
   /** @return prefix prepended to the beginning of each line in str */
   static std::string Prefix(const std::string &str, const std::string &prefix);
 
-  /** @return bytes formatted into the appropriate kilobyte, megabyte or gigabyte representation */
+  /** @return bytes formatted into the appropriate kilobyte, megabyte or
+   * gigabyte representation */
   static std::string FormatSize(uint64_t bytes);
 
-  /** @return string wrapped with control characters to appear bold in the console */
+  /** @return string wrapped with control characters to appear bold in the
+   * console */
   static std::string Bold(const std::string &str);
 
   /** @return uppercase version of the string */
@@ -71,7 +75,8 @@ class StringUtil {
   static std::string Indent(int num_indent);
 
   /**
-   * Return a new string that has stripped all occurrences of the provided character from the provided string.
+   * Return a new string that has stripped all occurrences of the provided
+   * character from the provided string.
    *
    * NOTE: WASTEFUL. Performs a copy. Do NOT use for performance-critical code!
    *

@@ -1,4 +1,5 @@
-// // ===----------------------------------------------------------------------===//
+// //
+// ===----------------------------------------------------------------------===//
 
 // //                         BusTub
 
@@ -8,7 +9,8 @@
 
 // // Copyright (c) 2015-2021, Carnegie Mellon University Database Group
 
-// // ===----------------------------------------------------------------------===//
+// //
+// ===----------------------------------------------------------------------===//
 
 // #include <thread>  // NOLINT
 // #include <vector>
@@ -27,7 +29,8 @@
 // TEST(HashTableTest, SampleTest) {
 //   auto *disk_manager = new DiskManager("test.db");
 //   auto *bpm = new BufferPoolManagerInstance(50, disk_manager);
-//   ExtendibleHashTable<int, int, IntComparator> ht("blah", bpm, IntComparator(), HashFunction<int>());
+//   ExtendibleHashTable<int, int, IntComparator> ht("blah", bpm,
+//   IntComparator(), HashFunction<int>());
 
 //   // insert a few values
 //   for (int i = 0; i < 5; i++) {

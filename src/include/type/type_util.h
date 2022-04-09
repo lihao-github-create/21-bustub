@@ -105,7 +105,8 @@ class TypeUtil {
   //      uint32_t rightLen = *reinterpret_cast<const uint32_t *>(rightPtr);
   //      result = GetCmpBool(
   //          TypeUtil::CompareStrings(leftPtr + sizeof(uint32_t), leftLen,
-  //                                   rightPtr + sizeof(uint32_t), rightLen) == 0);
+  //                                   rightPtr + sizeof(uint32_t), rightLen) ==
+  //                                   0);
   //      break;
   //    }
   //    default: { break; }
@@ -175,7 +176,8 @@ class TypeUtil {
   //      uint32_t rightLen = *reinterpret_cast<const uint32_t *>(rightPtr);
   //      result = GetCmpBool(
   //          TypeUtil::CompareStrings(leftPtr + sizeof(uint32_t), leftLen,
-  //                                   rightPtr + sizeof(uint32_t), rightLen) < 0);
+  //                                   rightPtr + sizeof(uint32_t), rightLen) <
+  //                                   0);
   //      break;
   //    }
   //    default: { break; }
@@ -245,7 +247,8 @@ class TypeUtil {
   //      uint32_t rightLen = *reinterpret_cast<const uint32_t *>(rightPtr);
   //      result = GetCmpBool(
   //          TypeUtil::CompareStrings(leftPtr + sizeof(uint32_t), leftLen,
-  //                                   rightPtr + sizeof(uint32_t), rightLen) > 0);
+  //                                   rightPtr + sizeof(uint32_t), rightLen) >
+  //                                   0);
   //      break;
   //    }
   //    default: { break; }

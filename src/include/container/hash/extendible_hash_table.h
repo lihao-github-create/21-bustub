@@ -79,7 +79,8 @@ class ExtendibleHashTable {
   uint32_t GetGlobalDepth();
 
   /**
-   * Helper function to verify the integrity of the extendible hash table's directory.  Do not touch.
+   * Helper function to verify the integrity of the extendible hash table's
+   * directory.  Do not touch.
    */
   void VerifyIntegrity();
 
@@ -128,7 +129,8 @@ class ExtendibleHashTable {
   HashTableDirectoryPage *FetchDirectoryPage();
 
   /**
-   * Fetches the a bucket page from the buffer pool manager using the bucket's page_id.
+   * Fetches the a bucket page from the buffer pool manager using the bucket's
+   * page_id.
    *
    * @param bucket_page_id the page_id to fetch
    * @return a pointer to a bucket page
@@ -146,7 +148,8 @@ class ExtendibleHashTable {
   bool SplitInsert(Transaction *transaction, const KeyType &key, const ValueType &value);
 
   /**
-   * Optionally merges an empty bucket into it's pair.  This is called by Remove,
+   * Optionally merges an empty bucket into it's pair.  This is called by
+   * Remove,
    * if Remove makes a bucket empty.
    *
    * There are three conditions under which we skip the merge:

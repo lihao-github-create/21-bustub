@@ -36,7 +36,8 @@ class SeqScanPlanNode : public AbstractPlanNode {
   /** @return The type of the plan node */
   PlanType GetType() const override { return PlanType::SeqScan; }
 
-  /** @return The predicate to test tuples against; tuples should only be returned if they evaluate to true */
+  /** @return The predicate to test tuples against; tuples should only be
+   * returned if they evaluate to true */
   const AbstractExpression *GetPredicate() const { return predicate_; }
 
   /** @return The identifier of the table that should be scanned */

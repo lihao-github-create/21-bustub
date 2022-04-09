@@ -23,10 +23,15 @@ SeqScanExecutor::SeqScanExecutor(ExecutorContext *exec_ctx, const SeqScanPlanNod
 void SeqScanExecutor::Init() { table_iterator_ = table_info_->table_->Begin(exec_ctx_->GetTransaction()); }
 
 bool SeqScanExecutor::Next(Tuple *tuple, RID *rid) {
+  auto txn = exec_ctx_->GetTransaction();
   bool ret = false;
   while (table_iterator_ != table_info_->table_->End()) {
-    if (exec_ctx_->GetTransaction()->GetState() == TransactionState::ABORTED) {
-      throw TransactionAbortException(exec_ctx_->GetTransaction()->GetTransactionId(), AbortReason::LOCK_ON_SHRINKING);
+    if (txn->GetIsolationLevel() != IsolationLevel::READ_UNCOMMITTED &&
+        !txn->IsSharedLocked(table_iterator_->GetRid()) && !txn->IsExclusiveLocked(table_iterator_->GetRid())) {
+      exec_ctx_->GetLockManager()->LockShared(txn, table_iterator_->GetRid());
+    }
+    if (txn->GetState() == TransactionState::ABORTED) {
+      throw Exception(ExceptionType::UNKNOWN_TYPE, "Read fail");
     }
     if (plan_->GetPredicate() == nullptr ||
         plan_->GetPredicate()->Evaluate(&(*table_iterator_), &(table_info_->schema_)).GetAs<bool>()) {
@@ -41,15 +46,15 @@ bool SeqScanExecutor::Next(Tuple *tuple, RID *rid) {
       *tuple = temp_tuple;
       *rid = table_iterator_->GetRid();
     }
-    if (exec_ctx_->GetTransaction()->GetIsolationLevel() == IsolationLevel::READ_COMMITTED) {
-      exec_ctx_->GetLockManager()->Unlock(exec_ctx_->GetTransaction(), table_iterator_->GetRid());
+    if (txn->GetIsolationLevel() == IsolationLevel::READ_COMMITTED &&
+        !txn->IsExclusiveLocked(table_iterator_->GetRid())) {
+      exec_ctx_->GetLockManager()->Unlock(txn, table_iterator_->GetRid());
     }
     ++table_iterator_;
     if (ret) {
       break;
     }
   }
-
   return ret;
 }
 

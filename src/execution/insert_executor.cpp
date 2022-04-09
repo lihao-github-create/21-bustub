@@ -10,9 +10,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include <memory>
-
 #include "execution/executors/insert_executor.h"
+
+#include <memory>
 
 namespace bustub {
 
@@ -31,29 +31,25 @@ void InsertExecutor::Init() {
 }
 
 bool InsertExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) {
+  auto txn = exec_ctx_->GetTransaction();
+  auto lock_mgr = exec_ctx_->GetLockManager();
   if (plan_->IsRawInsert()) {
     if (raw_insert_index_ < plan_->RawValues().size()) {
       Tuple temp_tuple(plan_->RawValuesAt(raw_insert_index_++), &(table_info_->schema_));
-      if (table_info_->table_->InsertTuple(temp_tuple, rid, exec_ctx_->GetTransaction())) {
+      if (table_info_->table_->InsertTuple(temp_tuple, rid, txn)) {
+        lock_mgr->LockExclusive(txn, *rid);
         InsertIndexEntry(&temp_tuple, rid);
         return true;
-      } else {
-        throw Exception(ExceptionType::UNKNOWN_TYPE, "Insert fail");
       }
     }
   } else {
     // 从子查询/child_executor获取tuple,并将tuple插入到table_info_->table_中
-    try {
-      if (child_executor_->Next(tuple, rid)) {
-        if (table_info_->table_->InsertTuple(*tuple, rid, exec_ctx_->GetTransaction())) {
-          InsertIndexEntry(tuple, rid);
-          return true;
-        } else {
-          throw Exception(ExceptionType::UNKNOWN_TYPE, "Insert fail");
-        }
+    if (child_executor_->Next(tuple, rid)) {
+      if (table_info_->table_->InsertTuple(*tuple, rid, txn)) {
+        lock_mgr->LockExclusive(txn, *rid);
+        InsertIndexEntry(tuple, rid);
+        return true;
       }
-    } catch (const Exception &e) {
-      throw;
     }
   }
   return false;
@@ -61,10 +57,13 @@ bool InsertExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) {
 
 void InsertExecutor::InsertIndexEntry(Tuple *tuple, RID *rid) {
   auto index_infos = exec_ctx_->GetCatalog()->GetTableIndexes(table_info_->name_);
+  auto txn = exec_ctx_->GetTransaction();
   for (auto &index_info : index_infos) {
     index_info->index_->InsertEntry(
         tuple->KeyFromTuple(table_info_->schema_, index_info->key_schema_, index_info->index_->GetKeyAttrs()), *rid,
-        exec_ctx_->GetTransaction());
+        txn);
+    txn->AppendTableWriteRecord(IndexWriteRecord(*rid, table_info_->oid_, WType::INSERT, *tuple, index_info->index_oid_,
+                                                 exec_ctx_->GetCatalog()));
   }
 }
 

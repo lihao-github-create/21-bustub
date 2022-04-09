@@ -49,11 +49,12 @@ class LockManager {
     std::list<LockRequest> request_queue_;
     std::condition_variable cv_;  // for notifying blocked transactions on this rid
     bool upgrading_ = false;
-  public:
+
+   public:
     void SetGranted(txn_id_t txn_id, LockMode lock_mode) {
-      for (auto iter = request_queue_.begin(); iter != request_queue_.end(); iter++) {
-        if (iter->txn_id_ == txn_id && iter->lock_mode_ == lock_mode) {
-          iter->granted_ = true;
+      for (auto &iter : request_queue_) {
+        if (iter.txn_id_ == txn_id && iter.lock_mode_ == lock_mode) {
+          iter.granted_ = true;
         }
       }
     }
@@ -86,7 +87,8 @@ class LockManager {
    * [LOCK_NOTE]: For all locking functions, we:
    * 1. return false if the transaction is aborted; and
    * 2. block on wait, return true when the lock request is granted; and
-   * 3. it is undefined behavior to try locking an already locked RID in the same transaction, i.e. the transaction
+   * 3. it is undefined behavior to try locking an already locked RID in the
+   * same transaction, i.e. the transaction
    *    is responsible for keeping track of its current locks.
    */
 
@@ -109,14 +111,16 @@ class LockManager {
   /**
    * Upgrade a lock from a shared lock to an exclusive lock.
    * @param txn the transaction requesting the lock upgrade
-   * @param rid the RID that should already be locked in shared mode by the requesting transaction
+   * @param rid the RID that should already be locked in shared mode by the
+   * requesting transaction
    * @return true if the upgrade is successful, false otherwise
    */
   bool LockUpgrade(Transaction *txn, const RID &rid);
 
   /**
    * Release the lock held by the transaction.
-   * @param txn the transaction releasing the lock, it should actually hold the lock
+   * @param txn the transaction releasing the lock, it should actually hold the
+   * lock
    * @param rid the RID that is locked by the transaction
    * @return true if the unlock is successful, false otherwise
    */
@@ -134,9 +138,12 @@ class LockManager {
   void RemoveEdge(txn_id_t t1, txn_id_t t2);
 
   /**
-   * Checks if the graph has a cycle, returning the newest transaction ID in the cycle if so.
-   * @param[out] txn_id if the graph has a cycle, will contain the newest transaction ID
-   * @return false if the graph has no cycle, otherwise stores the newest transaction ID in the cycle to txn_id
+   * Checks if the graph has a cycle, returning the newest transaction ID in the
+   * cycle if so.
+   * @param[out] txn_id if the graph has a cycle, will contain the newest
+   * transaction ID
+   * @return false if the graph has no cycle, otherwise stores the newest
+   * transaction ID in the cycle to txn_id
    */
   bool HasCycle(txn_id_t *txn_id);
 
@@ -146,16 +153,7 @@ class LockManager {
   /** Runs cycle detection in the background. */
   void RunCycleDetection();
 
-  bool IsCompatible(LockMode mode1, LockMode mode2) {
-    static bool compatible_matrix[2][2] = {
-        // s, x
-        true, false,  // s
-        false, false  // x
-    };
-    return compatible_matrix[int(mode1)][int(mode2)];
-  }
-
-  bool Dfs(txn_id_t txn_id, std::unordered_map<txn_id_t, bool> &visited, txn_id_t *new_txn_id);
+  bool Dfs(txn_id_t txn_id, txn_id_t *new_txn_id);
 
  private:
   std::mutex latch_;
@@ -166,6 +164,9 @@ class LockManager {
   std::unordered_map<RID, LockRequestQueue> lock_table_;
   /** Waits-for graph representation. */
   std::unordered_map<txn_id_t, std::vector<txn_id_t>> waits_for_;
+
+  // for cycle detection
+  std::unordered_map<txn_id_t, bool> visited_;
 };
 
 }  // namespace bustub

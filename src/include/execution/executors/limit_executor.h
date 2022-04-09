@@ -22,7 +22,8 @@
 namespace bustub {
 
 /**
- * LimitExecutor limits the number of output tuples produced by a child operator.
+ * LimitExecutor limits the number of output tuples produced by a child
+ * operator.
  */
 class LimitExecutor : public AbstractExecutor {
  public:
@@ -30,7 +31,8 @@ class LimitExecutor : public AbstractExecutor {
    * Construct a new LimitExecutor instance.
    * @param exec_ctx The executor context
    * @param plan The limit plan to be executed
-   * @param child_executor The child executor from which limited tuples are pulled
+   * @param child_executor The child executor from which limited tuples are
+   * pulled
    */
   LimitExecutor(ExecutorContext *exec_ctx, const LimitPlanNode *plan,
                 std::unique_ptr<AbstractExecutor> &&child_executor);

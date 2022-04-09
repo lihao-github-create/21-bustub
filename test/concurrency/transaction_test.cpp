@@ -53,7 +53,8 @@ class TransactionTest : public ::testing::Test {
   // This function is called before every test.
   void SetUp() override {
     ::testing::Test::SetUp();
-    // For each test, we create a new DiskManager, BufferPoolManager, TransactionManager, and Catalog.
+    // For each test, we create a new DiskManager, BufferPoolManager,
+    // TransactionManager, and Catalog.
     disk_manager_ = std::make_unique<DiskManager>("executor_test.db");
     bpm_ = std::make_unique<BufferPoolManagerInstance>(2560, disk_manager_.get());
     page_id_t page_id;

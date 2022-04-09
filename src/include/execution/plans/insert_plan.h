@@ -53,7 +53,8 @@ class InsertPlanNode : public AbstractPlanNode {
   /** @return The identifier of the table into which tuples are inserted */
   table_oid_t TableOid() const { return table_oid_; }
 
-  /** @return `true` if we embed insert values directly into the plan, `false` if we have a child plan that provides
+  /** @return `true` if we embed insert values directly into the plan, `false`
+   * if we have a child plan that provides
    * tuples*/
   bool IsRawInsert() const { return GetChildren().empty(); }
 

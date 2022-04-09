@@ -26,7 +26,8 @@ class RID {
   RID() = default;
 
   /**
-   * Creates a new Record Identifier for the given page identifier and slot number.
+   * Creates a new Record Identifier for the given page identifier and slot
+   * number.
    * @param page_id page identifier
    * @param slot_num slot number
    */

@@ -87,7 +87,8 @@ void TableGenerator::FillTable(TableInfo *info, TableInsertMeta *table_meta) {
 void TableGenerator::GenerateTestTables() {
   /**
    * This array configures each of the test tables. Each table is configured
-   * with a name, size, and schema. We also configure the columns of the table. If
+   * with a name, size, and schema. We also configure the columns of the table.
+   * If
    * you add a new table, set it up here.
    */
   std::vector<TableInsertMeta> insert_meta{

@@ -30,7 +30,8 @@ enum class ComparisonType { Equal, NotEqual, LessThan, LessThanOrEqual, GreaterT
  */
 class ComparisonExpression : public AbstractExpression {
  public:
-  /** Creates a new comparison expression representing (left comp_type right). */
+  /** Creates a new comparison expression representing (left comp_type right).
+   */
   ComparisonExpression(const AbstractExpression *left, const AbstractExpression *right, ComparisonType comp_type)
       : AbstractExpression({left, right}, TypeId::BOOLEAN), comp_type_{comp_type} {}
 

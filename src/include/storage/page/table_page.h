@@ -89,7 +89,8 @@ class TablePage : public Page {
    * @param txn transaction performing the delete
    * @param lock_manager the lock manager
    * @param log_manager the log manager
-   * @return true if marking the tuple as deleted is successful (i.e the tuple exists)
+   * @return true if marking the tuple as deleted is successful (i.e the tuple
+   * exists)
    */
   bool MarkDelete(const RID &rid, Transaction *txn, LockManager *lock_manager, LogManager *log_manager);
 
@@ -106,10 +107,12 @@ class TablePage : public Page {
   bool UpdateTuple(const Tuple &new_tuple, Tuple *old_tuple, const RID &rid, Transaction *txn,
                    LockManager *lock_manager, LogManager *log_manager);
 
-  /** To be called on commit or abort. Actually perform the delete or rollback an insert. */
+  /** To be called on commit or abort. Actually perform the delete or rollback
+   * an insert. */
   void ApplyDelete(const RID &rid, Transaction *txn, LogManager *log_manager);
 
-  /** To be called on abort. Rollback a delete, i.e. this reverses a MarkDelete. */
+  /** To be called on abort. Rollback a delete, i.e. this reverses a MarkDelete.
+   */
   void RollbackDelete(const RID &rid, Transaction *txn, LogManager *log_manager);
 
   /**
@@ -149,7 +152,8 @@ class TablePage : public Page {
   static constexpr size_t OFFSET_TUPLE_OFFSET = 24;  // Naming things is hard.
   static constexpr size_t OFFSET_TUPLE_SIZE = 28;
 
-  /** @return pointer to the end of the current free space, see header comment */
+  /** @return pointer to the end of the current free space, see header comment
+   */
   // note: 实际为offset,距page起始处的offset
   uint32_t GetFreeSpacePointer() { return *reinterpret_cast<uint32_t *>(GetData() + OFFSET_FREE_SPACE); }
 
@@ -159,7 +163,8 @@ class TablePage : public Page {
   }
 
   /**
-   * @note returned tuple count may be an overestimate because some slots may be empty
+   * @note returned tuple count may be an overestimate because some slots may be
+   * empty
    * @return at least the number of tuples in this page
    */
   uint32_t GetTupleCount() { return *reinterpret_cast<uint32_t *>(GetData() + OFFSET_TUPLE_COUNT); }
