@@ -168,5 +168,4 @@ class LockManager {
   // for cycle detection
   std::unordered_map<txn_id_t, bool> visited_;
 };
-
 }  // namespace bustub

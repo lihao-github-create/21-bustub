@@ -41,6 +41,7 @@ bool InsertExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) {
         InsertIndexEntry(&temp_tuple, rid);
         return true;
       }
+      throw Exception(ExceptionType::UNKNOWN_TYPE, "Insert fail");
     }
   } else {
     // 从子查询/child_executor获取tuple,并将tuple插入到table_info_->table_中

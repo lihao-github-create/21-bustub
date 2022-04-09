@@ -11,9 +11,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "concurrency/lock_manager.h"
-
 #include <utility>
 #include <vector>
+#include "concurrency/transaction_manager.h"
 
 #include "concurrency/transaction_manager.h"
 
@@ -246,6 +246,7 @@ bool LockManager::Dfs(txn_id_t txn_id, txn_id_t *new_txn_id) {
 
 bool LockManager::HasCycle(txn_id_t *txn_id) {
   // 通过dfs， 检测是否有环
+  visited_.clear();
   for (auto &waits_for_item : waits_for_) {
     auto visited_ite = visited_.find(waits_for_item.first);
     if (visited_ite != visited_.end()) {  // 此处visited_ite.second一定为true
