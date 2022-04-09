@@ -15,8 +15,6 @@
 #include <vector>
 #include "concurrency/transaction_manager.h"
 
-#include "concurrency/transaction_manager.h"
-
 namespace bustub {
 
 bool LockManager::LockShared(Transaction *txn, const RID &rid) {

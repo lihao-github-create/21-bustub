@@ -24,11 +24,12 @@ void SeqScanExecutor::Init() { table_iterator_ = table_info_->table_->Begin(exec
 
 bool SeqScanExecutor::Next(Tuple *tuple, RID *rid) {
   auto txn = exec_ctx_->GetTransaction();
+  auto lock_mgr = exec_ctx_->GetLockManager();
   bool ret = false;
   while (table_iterator_ != table_info_->table_->End()) {
     if (txn->GetIsolationLevel() != IsolationLevel::READ_UNCOMMITTED &&
         !txn->IsSharedLocked(table_iterator_->GetRid()) && !txn->IsExclusiveLocked(table_iterator_->GetRid())) {
-      exec_ctx_->GetLockManager()->LockShared(txn, table_iterator_->GetRid());
+      lock_mgr->LockShared(txn, table_iterator_->GetRid());
     }
     if (txn->GetState() == TransactionState::ABORTED) {
       throw Exception(ExceptionType::UNKNOWN_TYPE, "Read fail");
@@ -48,7 +49,7 @@ bool SeqScanExecutor::Next(Tuple *tuple, RID *rid) {
     }
     if (txn->GetIsolationLevel() == IsolationLevel::READ_COMMITTED &&
         !txn->IsExclusiveLocked(table_iterator_->GetRid())) {
-      exec_ctx_->GetLockManager()->Unlock(txn, table_iterator_->GetRid());
+      lock_mgr->Unlock(txn, table_iterator_->GetRid());
     }
     ++table_iterator_;
     if (ret) {
